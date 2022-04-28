@@ -1,0 +1,307 @@
+- status - Pending
+         - Approve
+         - Decline
+         - Survey
+         - KHS Check
+         - Instalation
+         - Approved Instalation
+         - Termination
+         - Valid 3
+         - Labeling
+         - Valid 4
+         - Reconsiliasi
+         - Pemberkasan
+         - Submit
+         - Paid
+
+
+- all project - url : https://api.cosisma.com/project/all
+              - method : GET
+
+- one project - url : https://api.cosisma.com/project/one/id/{project_id}/(khs_source/{TA|WITEL}) optional
+              - method : GET
+  
+- add project - url : https://api.cosisma.com/project/add 
+              - method : POST
+              - body : - 'project_code'
+                       - 'project_date'
+                       - 'project_note'
+                       - 'cat_id'  //categori id
+              
+- edit project - url : https://api.cosisma.com/project/edit/id/{project_id}
+              - method : PUT
+              - body : - 'project_code'
+                       - 'project_date'
+                       - 'project_note'
+                       - 'cat_id'  //categori id
+
+- delete project - url : https://api.cosisma.com/project/delete/id/{project_id}
+              - method : DELETE
+
+- approve project - url : https://api.cosisma.com/project/toApprove/id/{project_id}
+              - method : GET
+
+- decline project - url : https://api.cosisma.com/project/toDecline/id/{project_id}
+              - method : GET
+
+- add teknisi project - url : https://api.cosisma.com/project/addTechnician/id/{project_id}
+              - method : POST
+              - body : - 'technician' | 'example' : [
+                                                      {
+                                                        "userCode": 1,
+                                                        "user_leader": 0
+                                                      },
+                                                      {
+                                                        "userCode": 2,
+                                                        "user_leader": 1
+                                                      }
+                                                    ]
+                       - 'status' // 'Approve' or 'Survey'
+                                                
+- update teknisi project - url : https://api.cosisma.com/project/updateTechnician/id/{project_id}
+              - method : POST
+              - body : - 'technician' | 'example' : [
+                                                      {
+                                                        "userCode": 1,
+                                                        "user_leader": 0
+                                                      },
+                                                      {
+                                                        "userCode": 2,
+                                                        "user_leader": 1
+                                                      }
+                                                    ]
+                       - 'status' // 'Approve' or 'Survey'
+
+
+- add sitax project - url : https://api.cosisma.com/project/sitax/id/{project_id}
+              - method : POST
+              - body : - 'sitax_type' : 'sitax,non-sitax',
+                         if(sitax) - 'sitax_total'
+                                   - 'sitax_list' | example : ["rt","rw"]
+                                  
+
+- add feeder project - url : https://api.cosisma.com/project/addFeederBatch/id/{project_id}
+              - method : POST
+              - body : - 'feeder' | 'example' : [
+                                                  {
+                                                    "feeder_odc": "",
+                                                    "feeder_capacity": "",
+                                                    "feeder_address": "",
+                                                    "feeder_lg": "",
+                                                    "feeder_lt": "",
+                                                    "feeder_port": "",
+                                                    "feeder_core": ""
+                                                  },
+                                                  {
+                                                    "feeder_odc": "",
+                                                    "feeder_capacity": "",
+                                                    "feeder_address": "",
+                                                    "feeder_lg": "",
+                                                    "feeder_lt": "",
+                                                    "feeder_port": "",
+                                                    "feeder_core": ""
+                                                  }
+                                                ]
+
+- update feeder project - url : https://api.cosisma.com/project/updateFeeder/id/{feeder_id}
+              - method : PUT
+              - body : - feeder_odc
+                       - feeder_capacity
+                       - feeder_address
+                       - feeder_lg
+                       - feeder_lt
+                       - feeder_port
+                       - feeder_core
+
+- delete feeder project - url : https://api.cosisma.com/project/deleteFeeder/id/{feeder_id}
+              - method : DELETE
+
+- add distribusi project - url : https://api.cosisma.com/project/addDistribusiBatch/id/{feeder_id}
+              - method : POST
+              - body : - 'distribusi' | 'example' : [
+                                                      {
+                                                        "distribusi_kukd": "12",
+                                                        "distribusi_address": "asdaasd",
+                                                        "distribusi_lg": "8.67657",
+                                                        "distribusi_lt": "0.243423",
+                                                        "distribusi_core": "8",
+                                                        "distribusi_core_opsi": "9",
+                                                        "distribusi_capacity": "16",
+                                                        "distribusi_note": ""
+                                                      }
+                                                    ]
+                                                    or
+                                                    [
+                                                      {
+                                                        "distribusi_kukd": "12",
+                                                        "distribusi_dropcore": "199",
+                                                        "distribusi_address": "asdaasd",
+                                                        "distribusi_lg": "8.67657",
+                                                        "distribusi_lt": "0.243423",
+                                                        "distribusi_core": "8",
+                                                        "distribusi_core_opsi": "9",
+                                                        "distribusi_capacity": "16",
+                                                        "distribusi_note": ""
+                                                      }
+                                                    ]
+
+- update distribusi project - url : https://api.cosisma.com/project/updateDistribusi/id/{distribusi_id}
+              - method : PUT
+              - body : - distribusi_kukd
+                       - distribusi_dropcore | if label_cat on project <> 1
+                       - distribusi_address
+                       - distribusi_lg
+                       - distribusi_lt
+                       - distribusi_core
+                       - distribusi_core_opsi | nullabel
+                       - distribusi_capacity
+                       - distribusi_note  | nullabel
+
+- delete distribusi project - url : https://api.cosisma.com/project/deleteDistribusi/id/{distribusi_id}
+              - method : DELETE
+
+- add file survey project - url : https://api.cosisma.com/project/addFileSurvey/id/{project_id}
+              - method : POST
+              - body : - 'file' | base64 ex:"data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,UEsDBBQABgAI......."
+
+- delete file survey project - url : https://api.cosisma.com/project/deleteFileSurvey/id/{project_id}/survey/{survey_id}
+              - method : DELETE
+
+- add khs list - url : https://api.cosisma.com/project/addKHSList/id/{project_id}
+              - method : POST
+              - body : - 'designator_id'
+                       - 'khs_list_qty'
+              
+- edit khs list - url : https://api.cosisma.com/project/updateKHSList/id/{project_id}/khs/{khs_list_id}
+              - method : PUT
+              - body : - 'designator_id'
+                       - 'khs_list_qty'
+
+- delete khs project - url : https://api.cosisma.com/project/deleteKHSList/id/{project_id}/khs/{khs_list_id}
+              - method : DELETE
+
+- approve survey to khs check - url : https://api.cosisma.com/project/toKHSCheck/id/{project_id}
+              - method : GET
+
+- add khs - url : https://api.cosisma.com/project/khs/id/{project_id}
+              - method : POST
+              - body : - 'khs_source' | WITEL,TA
+                       - 'status' | KHS Check,Instalasi
+
+- approve for instalatoion khs - url : https://api.cosisma.com/project/toApproveInstalation/id/{project_id}
+              - method : GET
+
+- add file instalation project - url : https://api.cosisma.com/project/addFileInstalation/id/{project_id}
+              - method : POST
+              - body : - 'file' | base64 ex:"data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,UEsDBBQABgAI......."
+
+- delete file instalation project - url : https://api.cosisma.com/project/deleteFileInstalation/id/{project_id}/survey/{survey_id}
+              - method : DELETE
+
+- approve for termination khs - url : https://api.cosisma.com/project/toApproveTerminasi/id/{project_id}
+              - method : GET
+
+- approve termination to valid 3 - url : https://api.cosisma.com/project/toApproveValid3/id/{project_id}
+              - method : GET
+
+- complete feeder and distribusi project - url : https://api.cosisma.com/project/completeFeederAndDistribusi/id/{project_id}
+              - method : POST
+              - body : - 'distribusi' | 'example' : [
+                                                      {
+                                                        "distribusi_id": 2,
+                                                        "hasil_ukur_odp_valid_3": 4
+                                                      }
+                                                    ]  
+
+                       - 'feeder' | 'example' : [
+                                                  {
+                                                    "feeder_id": 4,
+                                                    "olt_gpon": 5,
+                                                    "olt_slot": 66,
+                                                    "otl_port": 88,
+                                                    "output_feeder": 4,
+                                                    "output_pasif": 4
+                                                  }
+                                                ]
+                       - 'note' | nullabel
+
+- approve valid 3 to labeling - url : https://api.cosisma.com/project/toApproveLabeling/id/{project_id}
+              - method : GET
+
+- add file labeling project - url : https://api.cosisma.com/project/addFileLabeling/id/{project_id}
+              - method : POST
+              - body : - 'file' | base64 ex:"data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,UEsDBBQABgAI......."
+
+- delete file labeling project - url : https://api.cosisma.com/project/deleteFileLabeling/id/{project_id}/survey/{survey_id}
+              - method : DELETE
+
+- approve labeling to valid 4 - url : https://api.cosisma.com/project/toApproveValid4/id/{project_id}
+              - method : GET
+
+- complete distribusi project - url : https://api.cosisma.com/project/finalCompleteDistribusi/id/{project_id}
+              - method : POST
+              - body : - 'distribusi' | 'example' : [
+                                                      {
+                                                        "distribusi_id": 2,
+                                                        "odp_valid_4": "asd",
+                                                        "hasil_ukur_odp_valid_4": 4
+                                                      }
+                                                    ]  
+                       - 'note' | nullabel
+
+- approve valid 4 to reconsiliasi - url : https://api.cosisma.com/project/toApproveReconsiliasi/id/{project_id}
+              - method : GET
+
+- task reconsiliasi - url : https://api.cosisma.com/project/reconsiliasi/id/{project_id}
+              - method : PUT
+              - body : - 'project_reconsiliasi'
+
+- approve reconsiliasi to pemberkasan - url : https://api.cosisma.com/project/toApprovePemberkasan/id/{project_id}
+              - method : GET
+
+- approve pemberkasan to submit - url : https://api.cosisma.com/project/toApproveSubmit/id/{project_id}
+              - method : GET
+
+- approve submit to paid - url : https://api.cosisma.com/project/toApprovePaid/id/{project_id}
+              - method : GET
+
+
+
+
+- add data teknis - url : https://api.cosisma.com/project/addDataTeknis/id/{project_id}
+              - method : POST
+              - body : - 'data_teknis' | 'example' : [
+                                                        {
+                                                            "project_id": 1,
+                                                            "khs_list": [
+                                                                {
+                                                                    "tipe": "GPON",
+                                                                    "designator_id": 1,
+                                                                    "khs_list_qty": 30,
+                                                                    "GPON": {
+                                                                        "gpon": 30,
+                                                                        "slot": 30,
+                                                                        "port": 30,
+                                                                        "output_feeder": 30,
+                                                                        "output_pasif": 30
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "project_id": 1,
+                                                            "khs_list": [
+                                                                {
+                                                                    "tipe": "Feeder",
+                                                                    "designator_id": 1,
+                                                                    "khs_list_qty": 30
+                                                                }
+                                                            ]
+                                                        }
+                                                    ] 
+
+- delete data teknis - url : https://api.cosisma.com/project/deleteDataTeknis/id/{khs_id}
+              - method : DELETE
+              
+- delete data teknis list - url : https://api.cosisma.com/project/deleteDataTeknisList/id/{khs_list_id}
+              - method : DELETE
