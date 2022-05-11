@@ -79,7 +79,7 @@
                          if(sitax) - 'sitax_total'
                                    - 'sitax_list' | example : ["rt","rw"]
                                   
-
+------------ deprecated ------------
 - add feeder project - url : https://api.cosisma.com/project/addFeederBatch/id/{project_id}
               - method : POST
               - body : - 'feeder' | 'example' : [
@@ -102,7 +102,7 @@
                                                     "feeder_core": ""
                                                   }
                                                 ]
-
+------------ deprecated ------------
 - update feeder project - url : https://api.cosisma.com/project/updateFeeder/id/{feeder_id}
               - method : PUT
               - body : - feeder_odc
@@ -112,10 +112,10 @@
                        - feeder_lt
                        - feeder_port
                        - feeder_core
-
+------------ deprecated ------------
 - delete feeder project - url : https://api.cosisma.com/project/deleteFeeder/id/{feeder_id}
               - method : DELETE
-
+------------ deprecated ------------
 - add distribusi project - url : https://api.cosisma.com/project/addDistribusiBatch/id/{feeder_id}
               - method : POST
               - body : - 'distribusi' | 'example' : [
@@ -144,7 +144,7 @@
                                                         "distribusi_note": ""
                                                       }
                                                     ]
-
+------------ deprecated ------------
 - update distribusi project - url : https://api.cosisma.com/project/updateDistribusi/id/{distribusi_id}
               - method : PUT
               - body : - distribusi_kukd
@@ -156,7 +156,7 @@
                        - distribusi_core_opsi | nullabel
                        - distribusi_capacity
                        - distribusi_note  | nullabel
-
+------------ deprecated ------------
 - delete distribusi project - url : https://api.cosisma.com/project/deleteDistribusi/id/{distribusi_id}
               - method : DELETE
 
@@ -167,16 +167,17 @@
 - delete file survey project - url : https://api.cosisma.com/project/deleteFileSurvey/id/{project_id}/survey/{survey_id}
               - method : DELETE
 
+------------ deprecated ------------
 - add khs list - url : https://api.cosisma.com/project/addKHSList/id/{project_id}
               - method : POST
               - body : - 'designator_id'
                        - 'khs_list_qty'
-              
+------------ deprecated ------------         
 - edit khs list - url : https://api.cosisma.com/project/updateKHSList/id/{project_id}/khs/{khs_list_id}
               - method : PUT
               - body : - 'designator_id'
                        - 'khs_list_qty'
-
+------------ deprecated ------------
 - delete khs project - url : https://api.cosisma.com/project/deleteKHSList/id/{project_id}/khs/{khs_list_id}
               - method : DELETE
 

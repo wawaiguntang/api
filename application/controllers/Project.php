@@ -77,7 +77,7 @@ class Project extends RestController
             ->join('region', 'region.region_id=witel.region_id')
             ->where('project.deleteAt', NULL)
             ->where('project.project_id', $project_id)
-            // ->where($where)
+            ->where($where)
             ->get('project')
             ->row_array();
         if ($getData == NULL) {
@@ -119,6 +119,7 @@ class Project extends RestController
             $khs = $this->db
                 ->get_where('project_khs pk', ['pk.deleteAt' => NULL, 'pk.project_id' => $project_id])
                 ->result_array();
+            $r = $khs;
             foreach ($khs as $k => $s) {
                 $khslist = $this->db
                     ->join('designator d', 'd.designator_id=pkl.designator_id')
@@ -156,78 +157,105 @@ class Project extends RestController
                         'data' => $dataTipe
                     ];
                 }
-                $s['khs_list'] = $temp;
-                $tempKHS = $s;
-                $return['khs'][] = $s;
+                $r['khs_list'] = $temp;
             }
+            $return['khs'][] = $r;
         }
-        // if ($getData['project_status'] == 'KHS Check') {
-        //     $getDataUser = $this->UserModel->uniqueEmail($this->payload['data']['email']);
-        //     if ($getDataUser == NULL) {
-        //         $res = formatResponse(404, [], [], 'Data user not found', [], '');
-        //         $this->response($res, 404);
-        //     }
-        //     $getDataPackage = $this->GlobalModel->getData('package', ['deleteAt' => NULL, 'package_id' => $getDataUser['package_id']], false);
-        //     if ($getDataPackage == NULL) {
-        //         $res = formatResponse(404, [], [], 'Data package from user not found', [], '');
-        //         $this->response($res, 404);
-        //     }
-        //     $dataKHSList = [];
-        //     $getDataKHSList = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'project_id' => $project_id]);
-        //     foreach ($getDataKHSList as $k => $v) {
-        //         $getDesignator = $this->db
-        //             ->select('d.designator_id,d.designator_code,d.designator_desc,dp.material_price,dp.service_price,d.createAt,d.updateAt,d.deleteAt')
-        //             ->join('designator d', 'd.designator_id=dp.designator_id')
-        //             ->where(['dp.deleteAt' => NULL, 'dp.package_id' => $getDataUser['package_id'], 'dp.designator_id' => $v['designator_id']])
-        //             ->get('designator_package dp')
-        //             ->row_array();
-        //         $khslist = $this->db
-        //             ->join('product p', 'p.product_id=d.product_id')
-        //             ->join('brand b', 'b.brand_id=p.brand_id')
-        //             ->get_where('designator d', ['d.deleteAt' => NULL, 'd.designator_id' => $v['designator_id']])
-        //             ->row_array();
-        //         if ($v['stock_id'] == NULL) {
-        //             $getStockChose = [];
-        //         } else {
-        //             $getStockChose = $this->GlobalModel->getData('stock_witel', ['stock_id' => $v['stock_id']], false);
-        //         }
-        //         $getStock = $this->GlobalModel->getData('stock_witel', ['witel_id' => $getData['witel_id'], 'product_id' => $khslist['product_id'], 'stock_qty >=' => $v['khs_list_qty']]);
-        //         if ($getDesignator != NULL) {
-        //             $params = [
-        //                 'khs_list_id' => $v['khs_list_id'],
-        //                 'khs_list_qty' => $v['khs_list_qty'],
-        //                 'designator_id' => $getDesignator['designator_id'],
-        //                 'designator_code' => $getDesignator['designator_code'],
-        //                 'designator_desc' => $getDesignator['designator_desc'],
-        //                 'product_name' => $khslist['product_name'],
-        //                 'product_portion' => $khslist['product_portion'],
-        //                 'brand_name' => $khslist['brand_name'],
-        //                 'khs_list_material_price' => $getDesignator['material_price'],
-        //                 'khs_list_service_price' => $getDesignator['service_price'],
-        //                 'khs_list_material_total' => $getDesignator['material_price'] * $v['khs_list_qty'],
-        //                 'khs_list_service_total' => $getDesignator['service_price'] * $v['khs_list_qty'],
-        //                 'stock' => $getStock,
-        //                 'stock_chosen' => $getStockChose
-        //             ];
-        //             $dataKHSList[] = $params;
-        //         }
-        //     }
-        //     $return['khs']['khs_list'] = $dataKHSList;
-        //     //sampe sini
-        //     $material_price = 0;
-        //     $service_price = 0;
-        //     foreach ($dataKHSList as $k =>  $v) {
-        //         $material_price += $v['khs_list_material_total'];
-        //         $service_price += $v['khs_list_service_total'];
-        //     }
-        //     $return['khs']['project_id'] = $project_id;
-        //     if ($khs_source == "TA") {
-        //         $return['khs']['khs_service_total'] = $service_price;
-        //     } else {
-        //         $return['khs']['khs_material_total'] = $material_price;
-        //         $return['khs']['khs_service_total'] = $service_price;
-        //     }
-        // }
+        if ($getData['project_status'] == 'KHS Check') {
+            $getDataUser = $this->UserModel->uniqueEmail($this->payload['data']['email']);
+            if ($getDataUser == NULL) {
+                $res = formatResponse(404, [], [], 'Data user not found', [], '');
+                $this->response($res, 404);
+            }
+            $getDataPackage = $this->GlobalModel->getData('package', ['deleteAt' => NULL, 'package_id' => $getDataUser['package_id']], false);
+            if ($getDataPackage == NULL) {
+                $res = formatResponse(404, [], [], 'Data package from user not found', [], '');
+                $this->response($res, 404);
+            }
+            $khs = $this->db
+                ->get_where('project_khs pk', ['pk.deleteAt' => NULL, 'pk.project_id' => $project_id])
+                ->result_array();
+            $r = [];
+            foreach ($khs as $k => $s) {
+                $t = $s;
+                $khslist = $this->db
+                    ->join('designator d', 'd.designator_id=pkl.designator_id')
+                    ->join('product p', 'p.product_id=d.product_id')
+                    ->join('brand b', 'b.brand_id=p.brand_id')
+                    ->get_where('project_khs_list pkl', ['pkl.deleteAt' => NULL, 'pkl.khs_id' => $s['khs_id']])
+                    ->result_array();
+                $temp = [];
+                foreach ($khslist as $k => $v) {
+                    $getDesignator = $this->db
+                        ->select('d.designator_id,d.designator_code,d.designator_desc,dp.material_price,dp.service_price,d.createAt,d.updateAt,d.deleteAt')
+                        ->join('designator d', 'd.designator_id=dp.designator_id')
+                        ->where(['dp.deleteAt' => NULL, 'dp.package_id' => $getDataUser['package_id'], 'dp.designator_id' => $v['designator_id']])
+                        ->get('designator_package dp')
+                        ->row_array();
+                    $khsNya = $this->db
+                        ->join('product p', 'p.product_id=d.product_id')
+                        ->join('brand b', 'b.brand_id=p.brand_id')
+                        ->get_where('designator d', ['d.deleteAt' => NULL, 'd.designator_id' => $v['designator_id']])
+                        ->row_array();
+                    if ($v['stock_id'] == NULL) {
+                        $getStockChose = [];
+                    } else {
+                        $getStockChose = $this->GlobalModel->getData('stock_witel', ['stock_id' => $v['stock_id']], false);
+                    }
+                    $getStock = $this->GlobalModel->getData('stock_witel', ['witel_id' => $getData['witel_id'], 'product_id' => $khsNya['product_id'], 'stock_qty >=' => $v['khs_list_qty']]);
+                    if ($v['tipe'] == 'Feeder') {
+                        $dataTipe = $this->db->get_where('project_feeder', ['deleteAt' => NULL, 'project_feeder_id' => $v['tipe_id']])->row_array();
+                    } elseif ($v['tipe'] == 'Penggelaran') {
+                        $dataTipe = $this->db->get_where('project_penggelaran', ['deleteAt' => NULL, 'project_penggelaran_id' => $v['tipe_id']])->row_array();
+                    } elseif ($v['tipe'] == 'ODP') {
+                        $dataTipe = $this->db->get_where('project_odc', ['deleteAt' => NULL, 'project_odc_id' => $v['tipe_id']])->row_array();
+                    } elseif ($v['tipe'] == 'ODC') {
+                        $dataTipe = $this->db->get_where('project_odp', ['deleteAt' => NULL, 'project_odp_id' => $v['tipe_id']])->row_array();
+                    } elseif ($v['tipe'] == 'GPON') {
+                        $dataTipe = $this->db->get_where('project_gpon', ['deleteAt' => NULL, 'project_gpon_id' => $v['tipe_id']])->row_array();
+                    } else {
+                        $res = formatResponse(404, [], [], 'Tipe not found', [], '');
+                        $this->response($res, 404);
+                    }
+                    $temp[] = [
+                        'khs_list_id' => $v['khs_list_id'],
+                        'khs_list_qty' => $v['khs_list_qty'],
+                        'designator_id' => $v['designator_id'],
+                        'designator_code' => $v['designator_code'],
+                        'designator_desc' => $v['designator_desc'],
+                        'product_name' => $v['product_name'],
+                        'product_portion' => $v['product_portion'],
+                        'brand_name' => $v['brand_name'],
+                        'tipe' => $v['tipe'],
+                        'tipe_id' => $v['tipe_id'],
+                        'data' => $dataTipe,
+                        'khs_list_material_price' => $getDesignator['material_price'],
+                        'khs_list_service_price' => $getDesignator['service_price'],
+                        'khs_list_material_total' => $getDesignator['material_price'] * $v['khs_list_qty'],
+                        'khs_list_service_total' => $getDesignator['service_price'] * $v['khs_list_qty'],
+                        'stock' => $getStock,
+                        'stock_chosen' => $getStockChose
+                    ];
+                }
+                $t['khs_list'] = $temp;
+                $material_price = 0;
+                $service_price = 0;
+                foreach ($khslist as $k =>  $v) {
+                    if ($v['tipe'] != 'GPON') {
+                        $material_price += $v['khs_list_material_total'];
+                        $service_price += $v['khs_list_service_total'];
+                    }
+                }
+                if ($khs_source == "TA") {
+                    $t['khs_service_total'] = $service_price;
+                } else {
+                    $t['khs_material_total'] = $material_price;
+                    $t['khs_service_total'] = $service_price;
+                }
+                $r[] = $t;
+            }
+            $return['khs'] = $r;
+        }
         // if (
         //     $getData['project_status'] == 'Instalation' ||
         //     $getData['project_status'] == 'Approved Instalation' ||
@@ -1147,38 +1175,6 @@ class Project extends RestController
         }
     }
 
-    //add data teknis
-    public $format_data_teknis = [
-        [
-            'project_id' => 1,
-            'khs_list' => [
-                [
-                    'tipe' => 'GPON', // Feeder|Penggelaran|ODP|ODC|GPON
-                    'designator_id' => 1,
-                    'khs_list_qty' => 30,
-                    // jika tipe GPON
-                    'GPON' => [
-                        'gpon' => 30,
-                        'slot' => 30,
-                        'port' => 30,
-                        'output_feeder' => 30,
-                        'output_pasif' => 30,
-                    ]
-                ]
-            ]
-        ],
-        [
-            'project_id' => 1,
-            'khs_list' => [
-                [
-                    'tipe' => 'Feeder', // Feeder|Penggelaran|ODP|ODC|GPON
-                    'designator_id' => 1,
-                    'khs_list_qty' => 30
-                ]
-            ]
-        ]
-    ];
-
     public function addDataTeknis_post()
     {
         $permission = checkPermission($this->payload['data']['email'], ['CFED']);
@@ -1518,474 +1514,474 @@ class Project extends RestController
         }
     }
 
-    private $postDetailFormat = [
-        'feeder' => [
-            [
-                'project_id' => '',
-                'feeder_odc' => '',
-                'feeder_capacity' => '',
-                'feeder_address' => '',
-                'feeder_lg' => '',
-                'feeder_lt' => '',
-                'feeder_port' => '',
-                'feeder_core' => '',
-            ],
-            [
-                'project_id' => '',
-                'feeder_odc' => '',
-                'feeder_capacity' => '',
-                'feeder_address' => '',
-                'feeder_lg' => '',
-                'feeder_lt' => '',
-                'feeder_port' => '',
-                'feeder_core' => '',
-            ]
-        ]
-    ];
+    // private $postDetailFormat = [
+    //     'feeder' => [
+    //         [
+    //             'project_id' => '',
+    //             'feeder_odc' => '',
+    //             'feeder_capacity' => '',
+    //             'feeder_address' => '',
+    //             'feeder_lg' => '',
+    //             'feeder_lt' => '',
+    //             'feeder_port' => '',
+    //             'feeder_core' => '',
+    //         ],
+    //         [
+    //             'project_id' => '',
+    //             'feeder_odc' => '',
+    //             'feeder_capacity' => '',
+    //             'feeder_address' => '',
+    //             'feeder_lg' => '',
+    //             'feeder_lt' => '',
+    //             'feeder_port' => '',
+    //             'feeder_core' => '',
+    //         ]
+    //     ]
+    // ];
 
-    public function addFeederBatch_post()
-    {
-        $permission = checkPermission($this->payload['data']['email'], ['CFED']);
-        if ($permission['status'] == false) {
-            $this->response($permission['data'], 400);
-        }
+    // public function addFeederBatch_post()
+    // {
+    //     $permission = checkPermission($this->payload['data']['email'], ['CFED']);
+    //     if ($permission['status'] == false) {
+    //         $this->response($permission['data'], 400);
+    //     }
 
-        $project_id = $this->get('id');
-        if ($project_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID project is required', [], '');
-            $this->response($res, 400);
-        }
-        $getData = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $project_id], false);
-        if ($getData == NULL) {
-            $res = formatResponse(404, [], [], 'Data project not found', [], '');
-            $this->response($res, 404);
-        } else {
-            if ($getData['project_status'] != 'Survey') {
-                $res = formatResponse(400, [], [], 'Can\'t add feeder because status project not a \'Survey\'', [], '');
-                $this->response($res, 400);
-            }
-        }
-        if (!json_decode($this->post('feeder'), true)) {
-            $res = formatResponse(400, [], [], 'Wrong format for add feeder', [], '');
-            $this->response($res, 400);
-        }
+    //     $project_id = $this->get('id');
+    //     if ($project_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID project is required', [], '');
+    //         $this->response($res, 400);
+    //     }
+    //     $getData = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $project_id], false);
+    //     if ($getData == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data project not found', [], '');
+    //         $this->response($res, 404);
+    //     } else {
+    //         if ($getData['project_status'] != 'Survey') {
+    //             $res = formatResponse(400, [], [], 'Can\'t add feeder because status project not a \'Survey\'', [], '');
+    //             $this->response($res, 400);
+    //         }
+    //     }
+    //     if (!json_decode($this->post('feeder'), true)) {
+    //         $res = formatResponse(400, [], [], 'Wrong format for add feeder', [], '');
+    //         $this->response($res, 400);
+    //     }
 
-        $data = array(
-            'feeder' => json_decode($this->post('feeder'), true)
-        );
+    //     $data = array(
+    //         'feeder' => json_decode($this->post('feeder'), true)
+    //     );
 
-        $make = $this->validator->make($data, [
-            'feeder' => 'array',
-            'feeder.*.feeder_odc' => 'required',
-            'feeder.*.feeder_capacity' => 'required',
-            'feeder.*.feeder_address' => 'required',
-            'feeder.*.feeder_lg' => 'required',
-            'feeder.*.feeder_lt' => 'required',
-            'feeder.*.feeder_port' => 'required|integer|min:1|max:100',
-            'feeder.*.feeder_core' => 'required|integer|min:1|max:288',
-        ]);
+    //     $make = $this->validator->make($data, [
+    //         'feeder' => 'array',
+    //         'feeder.*.feeder_odc' => 'required',
+    //         'feeder.*.feeder_capacity' => 'required',
+    //         'feeder.*.feeder_address' => 'required',
+    //         'feeder.*.feeder_lg' => 'required',
+    //         'feeder.*.feeder_lt' => 'required',
+    //         'feeder.*.feeder_port' => 'required|integer|min:1|max:100',
+    //         'feeder.*.feeder_core' => 'required|integer|min:1|max:288',
+    //     ]);
 
-        $make->setAliases([
-            'feeder.*.feeder_odc' => 'ODC',
-            'feeder.*.feeder_capacity' => 'Capacity',
-            'feeder.*.feeder_address' => 'Address',
-            'feeder.*.feeder_lg' => 'Longitude',
-            'feeder.*.feeder_lt' => 'Latitude',
-            'feeder.*.feeder_port' => 'Port',
-            'feeder.*.feeder_core' => 'Core',
-        ]);
+    //     $make->setAliases([
+    //         'feeder.*.feeder_odc' => 'ODC',
+    //         'feeder.*.feeder_capacity' => 'Capacity',
+    //         'feeder.*.feeder_address' => 'Address',
+    //         'feeder.*.feeder_lg' => 'Longitude',
+    //         'feeder.*.feeder_lt' => 'Latitude',
+    //         'feeder.*.feeder_port' => 'Port',
+    //         'feeder.*.feeder_core' => 'Core',
+    //     ]);
 
-        $make->validate();
+    //     $make->validate();
 
-        if ($make->fails()) {
-            $errors = $make->errors();
-            $err = $errors->firstOfAll();
-            $res = formatResponse(400, [], $err, '', [], '');
-            $this->response($res, 400);
-        } else {
-            $params = [];
-            foreach ($data['feeder'] as $k => $v) {
-                $params[] = [
-                    'project_id' => $project_id,
-                    'feeder_odc' => $v['feeder_odc'],
-                    'feeder_capacity' => $v['feeder_capacity'],
-                    'feeder_address' => $v['feeder_address'],
-                    'feeder_lg' => $v['feeder_lg'],
-                    'feeder_lt' => $v['feeder_lt'],
-                    'feeder_port' => $v['feeder_port'],
-                    'feeder_core' => $v['feeder_core'],
-                ];
-            }
-            $in = $this->db->insert_batch('project_feeder', $params);
-            if ($in) {
-                $res = formatResponse(200, [], [], '', [], 'Success add feeder');
-                $this->response($res, 200);
-            } else {
-                $res = formatResponse(400, [], [], 'Failed add feeder', [], '');
-                $this->response($res, 400);
-            }
-        }
-    }
+    //     if ($make->fails()) {
+    //         $errors = $make->errors();
+    //         $err = $errors->firstOfAll();
+    //         $res = formatResponse(400, [], $err, '', [], '');
+    //         $this->response($res, 400);
+    //     } else {
+    //         $params = [];
+    //         foreach ($data['feeder'] as $k => $v) {
+    //             $params[] = [
+    //                 'project_id' => $project_id,
+    //                 'feeder_odc' => $v['feeder_odc'],
+    //                 'feeder_capacity' => $v['feeder_capacity'],
+    //                 'feeder_address' => $v['feeder_address'],
+    //                 'feeder_lg' => $v['feeder_lg'],
+    //                 'feeder_lt' => $v['feeder_lt'],
+    //                 'feeder_port' => $v['feeder_port'],
+    //                 'feeder_core' => $v['feeder_core'],
+    //             ];
+    //         }
+    //         $in = $this->db->insert_batch('project_feeder', $params);
+    //         if ($in) {
+    //             $res = formatResponse(200, [], [], '', [], 'Success add feeder');
+    //             $this->response($res, 200);
+    //         } else {
+    //             $res = formatResponse(400, [], [], 'Failed add feeder', [], '');
+    //             $this->response($res, 400);
+    //         }
+    //     }
+    // }
 
-    public function updateFeeder_put()
-    {
-        $permission = checkPermission($this->payload['data']['email'], ['UFED']);
-        if ($permission['status'] == false) {
-            $this->response($permission['data'], 400);
-        }
-        $feeder_id = $this->get('id');
-        if ($feeder_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID feeder is required', [], '');
-            $this->response($res, 400);
-        }
-        $getData = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $feeder_id], false);
-        if ($getData == NULL) {
-            $res = formatResponse(404, [], [], 'Data feeder not found', [], '');
-            $this->response($res, 404);
-        } else {
-            $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getData['project_id']], false);
-            if ($getDataProject == NULL) {
-                $res = formatResponse(404, [], [], 'Data project not found', [], '');
-                $this->response($res, 404);
-            } else {
-                if ($getDataProject['project_status'] != 'Survey') {
-                    $res = formatResponse(400, [], [], 'Can\'t edit feeder because status project not a \'Survey\'', [], '');
-                    $this->response($res, 400);
-                }
-            }
-        }
+    // public function updateFeeder_put()
+    // {
+    //     $permission = checkPermission($this->payload['data']['email'], ['UFED']);
+    //     if ($permission['status'] == false) {
+    //         $this->response($permission['data'], 400);
+    //     }
+    //     $feeder_id = $this->get('id');
+    //     if ($feeder_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID feeder is required', [], '');
+    //         $this->response($res, 400);
+    //     }
+    //     $getData = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $feeder_id], false);
+    //     if ($getData == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data feeder not found', [], '');
+    //         $this->response($res, 404);
+    //     } else {
+    //         $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getData['project_id']], false);
+    //         if ($getDataProject == NULL) {
+    //             $res = formatResponse(404, [], [], 'Data project not found', [], '');
+    //             $this->response($res, 404);
+    //         } else {
+    //             if ($getDataProject['project_status'] != 'Survey') {
+    //                 $res = formatResponse(400, [], [], 'Can\'t edit feeder because status project not a \'Survey\'', [], '');
+    //                 $this->response($res, 400);
+    //             }
+    //         }
+    //     }
 
-        $data = array(
-            'feeder_odc' => $this->put('feeder_odc'),
-            'feeder_capacity' => $this->put('feeder_capacity'),
-            'feeder_address' => $this->put('feeder_address'),
-            'feeder_lg' => $this->put('feeder_lg'),
-            'feeder_lt' => $this->put('feeder_lt'),
-            'feeder_port' => $this->put('feeder_port'),
-            'feeder_core' => $this->put('feeder_core'),
-        );
+    //     $data = array(
+    //         'feeder_odc' => $this->put('feeder_odc'),
+    //         'feeder_capacity' => $this->put('feeder_capacity'),
+    //         'feeder_address' => $this->put('feeder_address'),
+    //         'feeder_lg' => $this->put('feeder_lg'),
+    //         'feeder_lt' => $this->put('feeder_lt'),
+    //         'feeder_port' => $this->put('feeder_port'),
+    //         'feeder_core' => $this->put('feeder_core'),
+    //     );
 
-        $make = $this->validator->make($data, [
-            'feeder_odc' => 'required',
-            'feeder_capacity' => 'required',
-            'feeder_address' => 'required',
-            'feeder_lg' => 'required',
-            'feeder_lt' => 'required',
-            'feeder_port' => 'required|integer|min:1|max:100',
-            'feeder_core' => 'required|integer|min:1|max:288',
-        ]);
+    //     $make = $this->validator->make($data, [
+    //         'feeder_odc' => 'required',
+    //         'feeder_capacity' => 'required',
+    //         'feeder_address' => 'required',
+    //         'feeder_lg' => 'required',
+    //         'feeder_lt' => 'required',
+    //         'feeder_port' => 'required|integer|min:1|max:100',
+    //         'feeder_core' => 'required|integer|min:1|max:288',
+    //     ]);
 
-        $make->setAliases([
-            'feeder_odc' => 'ODC',
-            'feeder_capacity' => 'Capacity',
-            'feeder_address' => 'Address',
-            'feeder_lg' => 'Longitude',
-            'feeder_lt' => 'Latitude',
-            'feeder_port' => 'Port',
-            'feeder_core' => 'Core',
-        ]);
+    //     $make->setAliases([
+    //         'feeder_odc' => 'ODC',
+    //         'feeder_capacity' => 'Capacity',
+    //         'feeder_address' => 'Address',
+    //         'feeder_lg' => 'Longitude',
+    //         'feeder_lt' => 'Latitude',
+    //         'feeder_port' => 'Port',
+    //         'feeder_core' => 'Core',
+    //     ]);
 
-        $make->validate();
+    //     $make->validate();
 
-        if ($make->fails()) {
-            $errors = $make->errors();
-            $err = $errors->firstOfAll();
-            $res = formatResponse(400, [], $err, '', [], '');
-            $this->response($res, 400);
-        } else {
-            $in = $this->GlobalModel->update('project_feeder', $data, ['deleteAt' => NULL, 'feeder_id' => $feeder_id]);
-            if ($in) {
-                $res = formatResponse(200, [], [], '', [], 'Success update feeder');
-                $this->response($res, 200);
-            } else {
-                $res = formatResponse(400, [], [], 'Failed update feeder', [], '');
-                $this->response($res, 400);
-            }
-        }
-    }
+    //     if ($make->fails()) {
+    //         $errors = $make->errors();
+    //         $err = $errors->firstOfAll();
+    //         $res = formatResponse(400, [], $err, '', [], '');
+    //         $this->response($res, 400);
+    //     } else {
+    //         $in = $this->GlobalModel->update('project_feeder', $data, ['deleteAt' => NULL, 'feeder_id' => $feeder_id]);
+    //         if ($in) {
+    //             $res = formatResponse(200, [], [], '', [], 'Success update feeder');
+    //             $this->response($res, 200);
+    //         } else {
+    //             $res = formatResponse(400, [], [], 'Failed update feeder', [], '');
+    //             $this->response($res, 400);
+    //         }
+    //     }
+    // }
 
-    public function deleteFeeder_delete()
-    {
-        $permission = checkPermission($this->payload['data']['email'], ['DFED']);
-        if ($permission['status'] == false) {
-            $this->response($permission['data'], 400);
-        }
-        $feeder_id = $this->get('id');
-        if ($feeder_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID feeder is required', [], '');
-            $this->response($res, 400);
-        }
-        $getData = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $feeder_id], false);
-        if ($getData == NULL) {
-            $res = formatResponse(404, [], [], 'Data feeder not found', [], '');
-            $this->response($res, 404);
-        } else {
-            $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getData['project_id']], false);
-            if ($getDataProject == NULL) {
-                $res = formatResponse(404, [], [], 'Data project not found', [], '');
-                $this->response($res, 404);
-            } else {
-                if ($getDataProject['project_status'] != 'Survey') {
-                    $res = formatResponse(400, [], [], 'Can\'t delete feeder because status project not a \'Survey\'', [], '');
-                    $this->response($res, 400);
-                }
-            }
-        }
-        $in = $this->GlobalModel->delete('project_distribusi', ['deleteAt' => NULL, 'feeder_id' => $feeder_id]);
+    // public function deleteFeeder_delete()
+    // {
+    //     $permission = checkPermission($this->payload['data']['email'], ['DFED']);
+    //     if ($permission['status'] == false) {
+    //         $this->response($permission['data'], 400);
+    //     }
+    //     $feeder_id = $this->get('id');
+    //     if ($feeder_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID feeder is required', [], '');
+    //         $this->response($res, 400);
+    //     }
+    //     $getData = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $feeder_id], false);
+    //     if ($getData == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data feeder not found', [], '');
+    //         $this->response($res, 404);
+    //     } else {
+    //         $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getData['project_id']], false);
+    //         if ($getDataProject == NULL) {
+    //             $res = formatResponse(404, [], [], 'Data project not found', [], '');
+    //             $this->response($res, 404);
+    //         } else {
+    //             if ($getDataProject['project_status'] != 'Survey') {
+    //                 $res = formatResponse(400, [], [], 'Can\'t delete feeder because status project not a \'Survey\'', [], '');
+    //                 $this->response($res, 400);
+    //             }
+    //         }
+    //     }
+    //     $in = $this->GlobalModel->delete('project_distribusi', ['deleteAt' => NULL, 'feeder_id' => $feeder_id]);
 
-        $in = $this->GlobalModel->delete('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $feeder_id]);
-        if ($in) {
-            $res = formatResponse(200, [], [], '', [], 'Success delete feeder');
-            $this->response($res, 200);
-        } else {
-            $res = formatResponse(400, [], [], 'Failed delete feeder', [], '');
-            $this->response($res, 400);
-        }
-    }
+    //     $in = $this->GlobalModel->delete('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $feeder_id]);
+    //     if ($in) {
+    //         $res = formatResponse(200, [], [], '', [], 'Success delete feeder');
+    //         $this->response($res, 200);
+    //     } else {
+    //         $res = formatResponse(400, [], [], 'Failed delete feeder', [], '');
+    //         $this->response($res, 400);
+    //     }
+    // }
 
-    public function addDistribusiBatch_post()
-    {
-        $permission = checkPermission($this->payload['data']['email'], ['CDIS']);
-        if ($permission['status'] == false) {
-            $this->response($permission['data'], 400);
-        }
-        $feeder_id = $this->get('id');
-        if ($feeder_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID feeder is required', [], '');
-            $this->response($res, 400);
-        }
+    // public function addDistribusiBatch_post()
+    // {
+    //     $permission = checkPermission($this->payload['data']['email'], ['CDIS']);
+    //     if ($permission['status'] == false) {
+    //         $this->response($permission['data'], 400);
+    //     }
+    //     $feeder_id = $this->get('id');
+    //     if ($feeder_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID feeder is required', [], '');
+    //         $this->response($res, 400);
+    //     }
 
-        $getDataFeeder = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $feeder_id], false);
-        if ($getDataFeeder == NULL) {
-            $res = formatResponse(404, [], [], 'Data feeder not found', [], '');
-            $this->response($res, 404);
-        } else {
-            $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getDataFeeder['project_id']], false);
-            if ($getDataProject == NULL) {
-                $res = formatResponse(404, [], [], 'Data project not found', [], '');
-                $this->response($res, 404);
-            } else {
-                if ($getDataProject['project_status'] != 'Survey') {
-                    $res = formatResponse(400, [], [], 'Can\'t add distribusi because status project not a \'Survey\'', [], '');
-                    $this->response($res, 400);
-                }
-            }
-        }
+    //     $getDataFeeder = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $feeder_id], false);
+    //     if ($getDataFeeder == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data feeder not found', [], '');
+    //         $this->response($res, 404);
+    //     } else {
+    //         $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getDataFeeder['project_id']], false);
+    //         if ($getDataProject == NULL) {
+    //             $res = formatResponse(404, [], [], 'Data project not found', [], '');
+    //             $this->response($res, 404);
+    //         } else {
+    //             if ($getDataProject['project_status'] != 'Survey') {
+    //                 $res = formatResponse(400, [], [], 'Can\'t add distribusi because status project not a \'Survey\'', [], '');
+    //                 $this->response($res, 400);
+    //             }
+    //         }
+    //     }
 
-        if (!json_decode($this->post('distribusi'), true)) {
-            $res = formatResponse(400, [], [], 'Wrong format for distribution', [], '');
-            $this->response($res, 400);
-        }
+    //     if (!json_decode($this->post('distribusi'), true)) {
+    //         $res = formatResponse(400, [], [], 'Wrong format for distribution', [], '');
+    //         $this->response($res, 400);
+    //     }
 
-        $data = array(
-            'distribusi' => json_decode($this->post('distribusi'), true)
-        );
+    //     $data = array(
+    //         'distribusi' => json_decode($this->post('distribusi'), true)
+    //     );
 
-        $val = [
-            'distribusi' => 'array',
-            'distribusi.*.distribusi_kukd' => 'required|in:12,24,48',
-            'distribusi.*.distribusi_address' => 'required',
-            'distribusi.*.distribusi_benchmark_address' => 'required',
-            'distribusi.*.distribusi_odp' => 'required',
-            'distribusi.*.distribusi_lg' => 'required',
-            'distribusi.*.distribusi_lt' => 'required',
-            'distribusi.*.distribusi_core' => 'required|min:1|max:48',
-            'distribusi.*.distribusi_capacity' => 'required|in:8,16',
-        ];
+    //     $val = [
+    //         'distribusi' => 'array',
+    //         'distribusi.*.distribusi_kukd' => 'required|in:12,24,48',
+    //         'distribusi.*.distribusi_address' => 'required',
+    //         'distribusi.*.distribusi_benchmark_address' => 'required',
+    //         'distribusi.*.distribusi_odp' => 'required',
+    //         'distribusi.*.distribusi_lg' => 'required',
+    //         'distribusi.*.distribusi_lt' => 'required',
+    //         'distribusi.*.distribusi_core' => 'required|min:1|max:48',
+    //         'distribusi.*.distribusi_capacity' => 'required|in:8,16',
+    //     ];
 
-        if ($getDataProject['label_cat'] != '1') {
-            $val['distribusi.*.distribusi_dropcore'] = 'required|integer';
-        }
+    //     if ($getDataProject['label_cat'] != '1') {
+    //         $val['distribusi.*.distribusi_dropcore'] = 'required|integer';
+    //     }
 
-        $make = $this->validator->make($data, $val);
+    //     $make = $this->validator->make($data, $val);
 
-        $make->setAliases([
-            'distribusi.*.distribusi_kukd' => 'KU/KD',
-            'distribusi.*.distribusi_address' => 'Address',
-            'distribusi.*.distribusi_benchmark_address' => 'Benchmark Address',
-            'distribusi.*.distribusi_odp' => 'ODP',
-            'distribusi.*.distribusi_lg' => 'Longitude',
-            'distribusi.*.distribusi_lt' => 'Latitude',
-            'distribusi.*.distribusi_core' => 'Core',
-            'distribusi.*.distribusi_capacity' => 'Capacity',
-            'distribusi.*.distribusi_dropcore' => 'Dropcore'
-        ]);
+    //     $make->setAliases([
+    //         'distribusi.*.distribusi_kukd' => 'KU/KD',
+    //         'distribusi.*.distribusi_address' => 'Address',
+    //         'distribusi.*.distribusi_benchmark_address' => 'Benchmark Address',
+    //         'distribusi.*.distribusi_odp' => 'ODP',
+    //         'distribusi.*.distribusi_lg' => 'Longitude',
+    //         'distribusi.*.distribusi_lt' => 'Latitude',
+    //         'distribusi.*.distribusi_core' => 'Core',
+    //         'distribusi.*.distribusi_capacity' => 'Capacity',
+    //         'distribusi.*.distribusi_dropcore' => 'Dropcore'
+    //     ]);
 
-        $make->validate();
+    //     $make->validate();
 
-        if ($make->fails()) {
-            $errors = $make->errors();
-            $err = $errors->firstOfAll();
-            $res = formatResponse(400, [], $err, '', [], '');
-            $this->response($res, 400);
-        } else {
-            $params = [];
-            // $check = $this->GlobalModel->getData('project_distribusi', ['feeder_id' => $feeder_id, 'deleteAt' => NULL], false, 'distribusi_odp');
-            // $odp = ($check == NULL) ? 0 : $check['distribusi_odp'];
-            foreach ($data['distribusi'] as $k => $v) {
-                $params[] = [
-                    'feeder_id' => $feeder_id,
-                    'distribusi_kukd' => $v['distribusi_kukd'],
-                    'distribusi_odp' => $v['distribusi_odp'],
-                    'distribusi_dropcore' => ($getDataProject['label_cat'] == '1') ? NULL : $v['distribusi_dropcore'],
-                    'distribusi_address' => $v['distribusi_address'],
-                    'distribusi_benchmark_address' => $v['distribusi_benchmark_address'],
-                    'distribusi_lg' => $v['distribusi_lg'],
-                    'distribusi_lt' => $v['distribusi_lt'],
-                    'distribusi_core' => $v['distribusi_core'],
-                    'distribusi_core_opsi' => $v['distribusi_core_opsi'],
-                    'distribusi_capacity' => $v['distribusi_capacity'],
-                    'distribusi_note' => $v['distribusi_note'],
-                ];
-            }
-            $in = $this->db->insert_batch('project_distribusi', $params);
-            if ($in) {
-                $res = formatResponse(200, [], [], '', [], 'Success add distribusi');
-                $this->response($res, 200);
-            } else {
-                $res = formatResponse(400, [], [], 'Failed add distribusi', [], '');
-                $this->response($res, 400);
-            }
-        }
-    }
+    //     if ($make->fails()) {
+    //         $errors = $make->errors();
+    //         $err = $errors->firstOfAll();
+    //         $res = formatResponse(400, [], $err, '', [], '');
+    //         $this->response($res, 400);
+    //     } else {
+    //         $params = [];
+    //         // $check = $this->GlobalModel->getData('project_distribusi', ['feeder_id' => $feeder_id, 'deleteAt' => NULL], false, 'distribusi_odp');
+    //         // $odp = ($check == NULL) ? 0 : $check['distribusi_odp'];
+    //         foreach ($data['distribusi'] as $k => $v) {
+    //             $params[] = [
+    //                 'feeder_id' => $feeder_id,
+    //                 'distribusi_kukd' => $v['distribusi_kukd'],
+    //                 'distribusi_odp' => $v['distribusi_odp'],
+    //                 'distribusi_dropcore' => ($getDataProject['label_cat'] == '1') ? NULL : $v['distribusi_dropcore'],
+    //                 'distribusi_address' => $v['distribusi_address'],
+    //                 'distribusi_benchmark_address' => $v['distribusi_benchmark_address'],
+    //                 'distribusi_lg' => $v['distribusi_lg'],
+    //                 'distribusi_lt' => $v['distribusi_lt'],
+    //                 'distribusi_core' => $v['distribusi_core'],
+    //                 'distribusi_core_opsi' => $v['distribusi_core_opsi'],
+    //                 'distribusi_capacity' => $v['distribusi_capacity'],
+    //                 'distribusi_note' => $v['distribusi_note'],
+    //             ];
+    //         }
+    //         $in = $this->db->insert_batch('project_distribusi', $params);
+    //         if ($in) {
+    //             $res = formatResponse(200, [], [], '', [], 'Success add distribusi');
+    //             $this->response($res, 200);
+    //         } else {
+    //             $res = formatResponse(400, [], [], 'Failed add distribusi', [], '');
+    //             $this->response($res, 400);
+    //         }
+    //     }
+    // }
 
-    public function updateDistribusi_put()
-    {
-        $permission = checkPermission($this->payload['data']['email'], ['UDIS']);
-        if ($permission['status'] == false) {
-            $this->response($permission['data'], 400);
-        }
-        $distribusi_id = $this->get('id');
-        if ($distribusi_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID distribusi is required', [], '');
-            $this->response($res, 400);
-        }
-        $getData = $this->GlobalModel->getData('project_distribusi', ['deleteAt' => NULL, 'distribusi_id' => $distribusi_id], false);
-        if ($getData == NULL) {
-            $res = formatResponse(404, [], [], 'Data distribusi not found', [], '');
-            $this->response($res, 404);
-        } else {
-            $getDataFeeder = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $getData['feeder_id']], false);
-            if ($getDataFeeder == NULL) {
-                $res = formatResponse(404, [], [], 'Data feeder not found', [], '');
-                $this->response($res, 404);
-            } else {
-                $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getDataFeeder['project_id']], false);
-                if ($getDataProject == NULL) {
-                    $res = formatResponse(404, [], [], 'Data project not found', [], '');
-                    $this->response($res, 404);
-                } else {
-                    if ($getDataProject['project_status'] != 'Survey') {
-                        $res = formatResponse(400, [], [], 'Can\'t edit distribusi because status project not a \'Survey\'', [], '');
-                        $this->response($res, 400);
-                    }
-                }
-            }
-        }
+    // public function updateDistribusi_put()
+    // {
+    //     $permission = checkPermission($this->payload['data']['email'], ['UDIS']);
+    //     if ($permission['status'] == false) {
+    //         $this->response($permission['data'], 400);
+    //     }
+    //     $distribusi_id = $this->get('id');
+    //     if ($distribusi_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID distribusi is required', [], '');
+    //         $this->response($res, 400);
+    //     }
+    //     $getData = $this->GlobalModel->getData('project_distribusi', ['deleteAt' => NULL, 'distribusi_id' => $distribusi_id], false);
+    //     if ($getData == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data distribusi not found', [], '');
+    //         $this->response($res, 404);
+    //     } else {
+    //         $getDataFeeder = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $getData['feeder_id']], false);
+    //         if ($getDataFeeder == NULL) {
+    //             $res = formatResponse(404, [], [], 'Data feeder not found', [], '');
+    //             $this->response($res, 404);
+    //         } else {
+    //             $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getDataFeeder['project_id']], false);
+    //             if ($getDataProject == NULL) {
+    //                 $res = formatResponse(404, [], [], 'Data project not found', [], '');
+    //                 $this->response($res, 404);
+    //             } else {
+    //                 if ($getDataProject['project_status'] != 'Survey') {
+    //                     $res = formatResponse(400, [], [], 'Can\'t edit distribusi because status project not a \'Survey\'', [], '');
+    //                     $this->response($res, 400);
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        $data = array(
-            'distribusi_kukd' => $this->put('distribusi_kukd'),
-            'distribusi_dropcore' => ($this->put('distribusi_dropcore') == NULL) ? NULL : $this->put('distribusi_dropcore'),
-            'distribusi_address' => $this->put('distribusi_address'),
-            'distribusi_benchmark_address' => $this->put('distribusi_benchmark_address'),
-            'distribusi_odp' => $this->put('distribusi_odp'),
-            'distribusi_lg' => $this->put('distribusi_lg'),
-            'distribusi_lt' => $this->put('distribusi_lt'),
-            'distribusi_core' => $this->put('distribusi_core'),
-            'distribusi_core_opsi' => $this->put('distribusi_core_opsi'),
-            'distribusi_capacity' => $this->put('distribusi_capacity'),
-            'distribusi_note' => $this->put('distribusi_note'),
-        );
+    //     $data = array(
+    //         'distribusi_kukd' => $this->put('distribusi_kukd'),
+    //         'distribusi_dropcore' => ($this->put('distribusi_dropcore') == NULL) ? NULL : $this->put('distribusi_dropcore'),
+    //         'distribusi_address' => $this->put('distribusi_address'),
+    //         'distribusi_benchmark_address' => $this->put('distribusi_benchmark_address'),
+    //         'distribusi_odp' => $this->put('distribusi_odp'),
+    //         'distribusi_lg' => $this->put('distribusi_lg'),
+    //         'distribusi_lt' => $this->put('distribusi_lt'),
+    //         'distribusi_core' => $this->put('distribusi_core'),
+    //         'distribusi_core_opsi' => $this->put('distribusi_core_opsi'),
+    //         'distribusi_capacity' => $this->put('distribusi_capacity'),
+    //         'distribusi_note' => $this->put('distribusi_note'),
+    //     );
 
-        $val = [
-            'distribusi_kukd' => 'required|in:12,24,48',
-            'distribusi_address' => 'required',
-            'distribusi_benchmark_address' => 'required',
-            'distribusi_odp' => 'required',
-            'distribusi_lg' => 'required',
-            'distribusi_lt' => 'required',
-            'distribusi_core' => 'required',
-            'distribusi_capacity' => 'required|in:8,16',
-        ];
+    //     $val = [
+    //         'distribusi_kukd' => 'required|in:12,24,48',
+    //         'distribusi_address' => 'required',
+    //         'distribusi_benchmark_address' => 'required',
+    //         'distribusi_odp' => 'required',
+    //         'distribusi_lg' => 'required',
+    //         'distribusi_lt' => 'required',
+    //         'distribusi_core' => 'required',
+    //         'distribusi_capacity' => 'required|in:8,16',
+    //     ];
 
-        if ($getDataProject['label_cat'] != '1') {
-            $val['distribusi.*.distribusi_dropcore'] = 'required|integer';
-        }
+    //     if ($getDataProject['label_cat'] != '1') {
+    //         $val['distribusi.*.distribusi_dropcore'] = 'required|integer';
+    //     }
 
-        $make = $this->validator->make($data, $val);
+    //     $make = $this->validator->make($data, $val);
 
-        $make->setAliases([
-            'distribusi_kukd' => 'KU/KD',
-            'distribusi_odp' => 'ODP',
-            'distribusi_address' => 'Address',
-            'distribusi_benchmark_address' => 'Benchmark Address',
-            'distribusi_lg' => 'Longitude',
-            'distribusi_lt' => 'Latitude',
-            'distribusi_core' => 'Core',
-            'distribusi_capacity' => 'Capacity',
-        ]);
+    //     $make->setAliases([
+    //         'distribusi_kukd' => 'KU/KD',
+    //         'distribusi_odp' => 'ODP',
+    //         'distribusi_address' => 'Address',
+    //         'distribusi_benchmark_address' => 'Benchmark Address',
+    //         'distribusi_lg' => 'Longitude',
+    //         'distribusi_lt' => 'Latitude',
+    //         'distribusi_core' => 'Core',
+    //         'distribusi_capacity' => 'Capacity',
+    //     ]);
 
-        $make->validate();
+    //     $make->validate();
 
-        if ($make->fails()) {
-            $errors = $make->errors();
-            $err = $errors->firstOfAll();
-            $res = formatResponse(400, [], $err, '', [], '');
-            $this->response($res, 400);
-        } else {
-            $in = $this->GlobalModel->update('project_distribusi', $data, ['deleteAt' => NULL, 'distribusi_id' => $distribusi_id]);
-            if ($in) {
-                $res = formatResponse(200, [], [], '', [], 'Success update distribusi');
-                $this->response($res, 200);
-            } else {
-                $res = formatResponse(400, [], [], 'Failed update distribusi', [], '');
-                $this->response($res, 400);
-            }
-        }
-    }
+    //     if ($make->fails()) {
+    //         $errors = $make->errors();
+    //         $err = $errors->firstOfAll();
+    //         $res = formatResponse(400, [], $err, '', [], '');
+    //         $this->response($res, 400);
+    //     } else {
+    //         $in = $this->GlobalModel->update('project_distribusi', $data, ['deleteAt' => NULL, 'distribusi_id' => $distribusi_id]);
+    //         if ($in) {
+    //             $res = formatResponse(200, [], [], '', [], 'Success update distribusi');
+    //             $this->response($res, 200);
+    //         } else {
+    //             $res = formatResponse(400, [], [], 'Failed update distribusi', [], '');
+    //             $this->response($res, 400);
+    //         }
+    //     }
+    // }
 
-    public function deleteDistribusi_delete()
-    {
-        $permission = checkPermission($this->payload['data']['email'], ['DDIS']);
-        if ($permission['status'] == false) {
-            $this->response($permission['data'], 400);
-        }
-        $distribusi_id = $this->get('id');
-        if ($distribusi_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID distribusi is required', [], '');
-            $this->response($res, 400);
-        }
-        $getData = $this->GlobalModel->getData('project_distribusi', ['deleteAt' => NULL, 'distribusi_id' => $distribusi_id], false);
-        if ($getData == NULL) {
-            $res = formatResponse(404, [], [], 'Data distribusi not found', [], '');
-            $this->response($res, 404);
-        } else {
-            $getDataFeeder = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $getData['feeder_id']], false);
-            if ($getDataFeeder == NULL) {
-                $res = formatResponse(404, [], [], 'Data feeder not found', [], '');
-                $this->response($res, 404);
-            } else {
-                $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getDataFeeder['project_id']], false);
-                if ($getDataProject == NULL) {
-                    $res = formatResponse(404, [], [], 'Data project not found', [], '');
-                    $this->response($res, 404);
-                } else {
-                    if ($getDataProject['project_status'] != 'Survey') {
-                        $res = formatResponse(400, [], [], 'Can\'t delete distribusi because status project not a \'Survey\'', [], '');
-                        $this->response($res, 400);
-                    }
-                }
-            }
-        }
-        $in = $this->GlobalModel->delete('project_distribusi', ['deleteAt' => NULL, 'distribusi_id' => $distribusi_id]);
-        if ($in) {
-            $res = formatResponse(200, [], [], '', [], 'Success delete distribusi');
-            $this->response($res, 200);
-        } else {
-            $res = formatResponse(400, [], [], 'Failed delete distribusi', [], '');
-            $this->response($res, 400);
-        }
-    }
+    // public function deleteDistribusi_delete()
+    // {
+    //     $permission = checkPermission($this->payload['data']['email'], ['DDIS']);
+    //     if ($permission['status'] == false) {
+    //         $this->response($permission['data'], 400);
+    //     }
+    //     $distribusi_id = $this->get('id');
+    //     if ($distribusi_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID distribusi is required', [], '');
+    //         $this->response($res, 400);
+    //     }
+    //     $getData = $this->GlobalModel->getData('project_distribusi', ['deleteAt' => NULL, 'distribusi_id' => $distribusi_id], false);
+    //     if ($getData == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data distribusi not found', [], '');
+    //         $this->response($res, 404);
+    //     } else {
+    //         $getDataFeeder = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'feeder_id' => $getData['feeder_id']], false);
+    //         if ($getDataFeeder == NULL) {
+    //             $res = formatResponse(404, [], [], 'Data feeder not found', [], '');
+    //             $this->response($res, 404);
+    //         } else {
+    //             $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getDataFeeder['project_id']], false);
+    //             if ($getDataProject == NULL) {
+    //                 $res = formatResponse(404, [], [], 'Data project not found', [], '');
+    //                 $this->response($res, 404);
+    //             } else {
+    //                 if ($getDataProject['project_status'] != 'Survey') {
+    //                     $res = formatResponse(400, [], [], 'Can\'t delete distribusi because status project not a \'Survey\'', [], '');
+    //                     $this->response($res, 400);
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     $in = $this->GlobalModel->delete('project_distribusi', ['deleteAt' => NULL, 'distribusi_id' => $distribusi_id]);
+    //     if ($in) {
+    //         $res = formatResponse(200, [], [], '', [], 'Success delete distribusi');
+    //         $this->response($res, 200);
+    //     } else {
+    //         $res = formatResponse(400, [], [], 'Failed delete distribusi', [], '');
+    //         $this->response($res, 400);
+    //     }
+    // }
 
     public function addFileSurvey_post()
     {
@@ -2130,141 +2126,141 @@ class Project extends RestController
         }
     }
 
-    public function addKHSList_post()
-    {
-        $permission = checkPermission($this->payload['data']['email'], ['CKHSL']);
-        if ($permission['status'] == false) {
-            $this->response($permission['data'], 400);
-        }
-        $project_id = $this->get('id');
-        if ($project_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID project is required', [], '');
-            $this->response($res, 400);
-        }
-        $getData = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $project_id], false);
-        if ($getData == NULL) {
-            $res = formatResponse(404, [], [], 'Data project not found', [], '');
-            $this->response($res, 404);
-        } else {
-            if ($getData['project_status'] != 'Survey') {
-                $res = formatResponse(400, [], [], 'Can\'t add khs because status project not a \'Survey\'', [], '');
-                $this->response($res, 400);
-            }
-        }
-        $getDataUser = $this->UserModel->uniqueEmail($this->payload['data']['email']);
-        if ($getDataUser == NULL) {
-            $res = formatResponse(404, [], [], 'Data user not found', [], '');
-            $this->response($res, 404);
-        }
-        $data = array(
-            'project_id' => $project_id,
-            'designator_id' => $this->post('designator_id'),
-            'khs_list_qty' => $this->post('khs_list_qty'),
-            'userCode' => $getDataUser['userCode']
-        );
+    // public function addKHSList_post()
+    // {
+    //     $permission = checkPermission($this->payload['data']['email'], ['CKHSL']);
+    //     if ($permission['status'] == false) {
+    //         $this->response($permission['data'], 400);
+    //     }
+    //     $project_id = $this->get('id');
+    //     if ($project_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID project is required', [], '');
+    //         $this->response($res, 400);
+    //     }
+    //     $getData = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $project_id], false);
+    //     if ($getData == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data project not found', [], '');
+    //         $this->response($res, 404);
+    //     } else {
+    //         if ($getData['project_status'] != 'Survey') {
+    //             $res = formatResponse(400, [], [], 'Can\'t add khs because status project not a \'Survey\'', [], '');
+    //             $this->response($res, 400);
+    //         }
+    //     }
+    //     $getDataUser = $this->UserModel->uniqueEmail($this->payload['data']['email']);
+    //     if ($getDataUser == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data user not found', [], '');
+    //         $this->response($res, 404);
+    //     }
+    //     $data = array(
+    //         'project_id' => $project_id,
+    //         'designator_id' => $this->post('designator_id'),
+    //         'khs_list_qty' => $this->post('khs_list_qty'),
+    //         'userCode' => $getDataUser['userCode']
+    //     );
 
-        $make = $this->validator->make($data, [
-            'designator_id' => 'required',
-            'khs_list_qty' => 'required|integer',
-        ]);
+    //     $make = $this->validator->make($data, [
+    //         'designator_id' => 'required',
+    //         'khs_list_qty' => 'required|integer',
+    //     ]);
 
-        $make->setAliases([
-            'designator_id' => 'Designator',
-            'khs_list_qty' => 'Quantity',
-        ]);
+    //     $make->setAliases([
+    //         'designator_id' => 'Designator',
+    //         'khs_list_qty' => 'Quantity',
+    //     ]);
 
-        $make->validate();
+    //     $make->validate();
 
-        if ($make->fails()) {
-            $errors = $make->errors();
-            $err = $errors->firstOfAll();
-            $res = formatResponse(400, [], $err, '', [], '');
-            $this->response($res, 400);
-        } else {
-            $cek = $this->GlobalModel->insert('project_khs_list', $data);
-            if ($cek) {
-                $data = $this->GlobalModel->getData('project_khs_list', ['khs_list_id' => $this->db->insert_id(), 'deleteAt' => NULL], false);
-                $res = formatResponse(200, $data, [], '', [], 'Success to create khs list');
-                $this->response($res, 200);
-            } else {
-                $res = formatResponse(400, [], [], 'Failed to create khs list', [], '');
-                $this->response($res, 400);
-            }
-        }
-    }
+    //     if ($make->fails()) {
+    //         $errors = $make->errors();
+    //         $err = $errors->firstOfAll();
+    //         $res = formatResponse(400, [], $err, '', [], '');
+    //         $this->response($res, 400);
+    //     } else {
+    //         $cek = $this->GlobalModel->insert('project_khs_list', $data);
+    //         if ($cek) {
+    //             $data = $this->GlobalModel->getData('project_khs_list', ['khs_list_id' => $this->db->insert_id(), 'deleteAt' => NULL], false);
+    //             $res = formatResponse(200, $data, [], '', [], 'Success to create khs list');
+    //             $this->response($res, 200);
+    //         } else {
+    //             $res = formatResponse(400, [], [], 'Failed to create khs list', [], '');
+    //             $this->response($res, 400);
+    //         }
+    //     }
+    // }
 
-    public function updateKHSList_put()
-    {
-        $permission = checkPermission($this->payload['data']['email'], ['UKHSL']);
-        if ($permission['status'] == false) {
-            $this->response($permission['data'], 400);
-        }
-        $project_id = $this->get('id');
-        if ($project_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID project is required', [], '');
-            $this->response($res, 400);
-        }
-        $getData = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $project_id], false);
-        if ($getData == NULL) {
-            $res = formatResponse(404, [], [], 'Data project not found', [], '');
-            $this->response($res, 404);
-        } else {
-            if ($getData['project_status'] != 'Survey') {
-                $res = formatResponse(400, [], [], 'Can\'t edit khs because status project not a \'Survey\'', [], '');
-                $this->response($res, 400);
-            }
-        }
-        $khs_list_id = $this->get('khs');
-        if ($khs_list_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID list khs is required', [], '');
-            $this->response($res, 400);
-        }
-        $getDataKHS = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'khs_list_id' => $khs_list_id], false);
-        if ($getDataKHS == NULL) {
-            $res = formatResponse(404, [], [], 'Data list khs not found', [], '');
-            $this->response($res, 404);
-        }
-        $getDataUser = $this->UserModel->uniqueEmail($this->payload['data']['email']);
-        if ($getDataUser == NULL) {
-            $res = formatResponse(404, [], [], 'Data user not found', [], '');
-            $this->response($res, 404);
-        }
-        $data = array(
-            'project_id' => $project_id,
-            'designator_id' => $this->put('designator_id'),
-            'khs_list_qty' => $this->put('khs_list_qty'),
-            'userCode' => $getDataUser['userCode']
-        );
+    // public function updateKHSList_put()
+    // {
+    //     $permission = checkPermission($this->payload['data']['email'], ['UKHSL']);
+    //     if ($permission['status'] == false) {
+    //         $this->response($permission['data'], 400);
+    //     }
+    //     $project_id = $this->get('id');
+    //     if ($project_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID project is required', [], '');
+    //         $this->response($res, 400);
+    //     }
+    //     $getData = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $project_id], false);
+    //     if ($getData == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data project not found', [], '');
+    //         $this->response($res, 404);
+    //     } else {
+    //         if ($getData['project_status'] != 'Survey') {
+    //             $res = formatResponse(400, [], [], 'Can\'t edit khs because status project not a \'Survey\'', [], '');
+    //             $this->response($res, 400);
+    //         }
+    //     }
+    //     $khs_list_id = $this->get('khs');
+    //     if ($khs_list_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID list khs is required', [], '');
+    //         $this->response($res, 400);
+    //     }
+    //     $getDataKHS = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'khs_list_id' => $khs_list_id], false);
+    //     if ($getDataKHS == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data list khs not found', [], '');
+    //         $this->response($res, 404);
+    //     }
+    //     $getDataUser = $this->UserModel->uniqueEmail($this->payload['data']['email']);
+    //     if ($getDataUser == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data user not found', [], '');
+    //         $this->response($res, 404);
+    //     }
+    //     $data = array(
+    //         'project_id' => $project_id,
+    //         'designator_id' => $this->put('designator_id'),
+    //         'khs_list_qty' => $this->put('khs_list_qty'),
+    //         'userCode' => $getDataUser['userCode']
+    //     );
 
-        $make = $this->validator->make($data, [
-            'designator_id' => 'required',
-            'khs_list_qty' => 'required|integer',
-        ]);
+    //     $make = $this->validator->make($data, [
+    //         'designator_id' => 'required',
+    //         'khs_list_qty' => 'required|integer',
+    //     ]);
 
-        $make->setAliases([
-            'designator_id' => 'Designator',
-            'khs_list_qty' => 'Quantity',
-        ]);
+    //     $make->setAliases([
+    //         'designator_id' => 'Designator',
+    //         'khs_list_qty' => 'Quantity',
+    //     ]);
 
-        $make->validate();
+    //     $make->validate();
 
-        if ($make->fails()) {
-            $errors = $make->errors();
-            $err = $errors->firstOfAll();
-            $res = formatResponse(400, [], $err, '', [], '');
-            $this->response($res, 400);
-        } else {
-            $cek = $this->GlobalModel->update('project_khs_list', $data, ['khs_list_id' => $khs_list_id, 'deleteAt' => NULL]);
-            if ($cek) {
-                $data = $this->GlobalModel->getData('project_khs_list', ['khs_list_id' => $khs_list_id, 'deleteAt' => NULL], false);
-                $res = formatResponse(200, $data, [], '', [], 'Success to update khs list');
-                $this->response($res, 200);
-            } else {
-                $res = formatResponse(400, [], [], 'Failed to update khs list', [], '');
-                $this->response($res, 400);
-            }
-        }
-    }
+    //     if ($make->fails()) {
+    //         $errors = $make->errors();
+    //         $err = $errors->firstOfAll();
+    //         $res = formatResponse(400, [], $err, '', [], '');
+    //         $this->response($res, 400);
+    //     } else {
+    //         $cek = $this->GlobalModel->update('project_khs_list', $data, ['khs_list_id' => $khs_list_id, 'deleteAt' => NULL]);
+    //         if ($cek) {
+    //             $data = $this->GlobalModel->getData('project_khs_list', ['khs_list_id' => $khs_list_id, 'deleteAt' => NULL], false);
+    //             $res = formatResponse(200, $data, [], '', [], 'Success to update khs list');
+    //             $this->response($res, 200);
+    //         } else {
+    //             $res = formatResponse(400, [], [], 'Failed to update khs list', [], '');
+    //             $this->response($res, 400);
+    //         }
+    //     }
+    // }
 
     public function updateKHSListSource_put()
     {
@@ -2344,47 +2340,47 @@ class Project extends RestController
         }
     }
 
-    public function deleteKHSList_delete()
-    {
-        $permission = checkPermission($this->payload['data']['email'], ['DKHSL']);
-        if ($permission['status'] == false) {
-            $this->response($permission['data'], 400);
-        }
-        $project_id = $this->get('id');
-        if ($project_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID project is required', [], '');
-            $this->response($res, 400);
-        }
-        $getData = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $project_id], false);
-        if ($getData == NULL) {
-            $res = formatResponse(404, [], [], 'Data project not found', [], '');
-            $this->response($res, 404);
-        } else {
-            if ($getData['project_status'] != 'Survey') {
-                $res = formatResponse(400, [], [], 'Can\'t delete khs because status project not a \'Survey\'', [], '');
-                $this->response($res, 400);
-            }
-        }
-        $khs_list_id = $this->get('khs');
-        if ($khs_list_id == NULL) {
-            $res = formatResponse(400, [], [], 'ID list khs is required', [], '');
-            $this->response($res, 400);
-        }
-        $getDataKHS = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'khs_list_id' => $khs_list_id], false);
-        if ($getDataKHS == NULL) {
-            $res = formatResponse(404, [], [], 'Data list khs not found', [], '');
-            $this->response($res, 404);
-        }
+    // public function deleteKHSList_delete()
+    // {
+    //     $permission = checkPermission($this->payload['data']['email'], ['DKHSL']);
+    //     if ($permission['status'] == false) {
+    //         $this->response($permission['data'], 400);
+    //     }
+    //     $project_id = $this->get('id');
+    //     if ($project_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID project is required', [], '');
+    //         $this->response($res, 400);
+    //     }
+    //     $getData = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $project_id], false);
+    //     if ($getData == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data project not found', [], '');
+    //         $this->response($res, 404);
+    //     } else {
+    //         if ($getData['project_status'] != 'Survey') {
+    //             $res = formatResponse(400, [], [], 'Can\'t delete khs because status project not a \'Survey\'', [], '');
+    //             $this->response($res, 400);
+    //         }
+    //     }
+    //     $khs_list_id = $this->get('khs');
+    //     if ($khs_list_id == NULL) {
+    //         $res = formatResponse(400, [], [], 'ID list khs is required', [], '');
+    //         $this->response($res, 400);
+    //     }
+    //     $getDataKHS = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'khs_list_id' => $khs_list_id], false);
+    //     if ($getDataKHS == NULL) {
+    //         $res = formatResponse(404, [], [], 'Data list khs not found', [], '');
+    //         $this->response($res, 404);
+    //     }
 
-        $cek = $this->GlobalModel->delete('project_khs_list', ['khs_list_id' => $khs_list_id, 'deleteAt' => NULL]);
-        if ($cek) {
-            $res = formatResponse(200, [], [], '', [], 'Success to delete khs list');
-            $this->response($res, 200);
-        } else {
-            $res = formatResponse(400, [], [], 'Failed to delete khs list', [], '');
-            $this->response($res, 400);
-        }
-    }
+    //     $cek = $this->GlobalModel->delete('project_khs_list', ['khs_list_id' => $khs_list_id, 'deleteAt' => NULL]);
+    //     if ($cek) {
+    //         $res = formatResponse(200, [], [], '', [], 'Success to delete khs list');
+    //         $this->response($res, 200);
+    //     } else {
+    //         $res = formatResponse(400, [], [], 'Failed to delete khs list', [], '');
+    //         $this->response($res, 400);
+    //     }
+    // }
 
     public function toKHSCheck_get()
     {
@@ -2405,23 +2401,17 @@ class Project extends RestController
             if ($getData['project_status'] == 'Survey') {
                 $this->db->trans_begin();
                 $check = $this->GlobalModel->getData('project_survey', ['deleteAt' => NULL, 'project_id' => $project_id, 'direktori' => 'survey']);
-                $check2 = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'project_id' => $project_id]);
+                $check2 = $this->GlobalModel->getData('project_khs', ['deleteAt' => NULL, 'project_id' => $project_id]);
                 $check3 = $this->GlobalModel->getData('project_sitax', ['deleteAt' => NULL, 'project_id' => $project_id]);
-                $check4 = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'project_id' => $project_id]);
-                if ($check == NULL || $check2 == NULL || $check3 == NULL || $check4 == NULL) {
-                    if ($check4 != NULL) {
-                        foreach ($check4 as $k => $v) {
-                            $check5 = $this->GlobalModel->getData('project_distribusi', ['deleteAt' => NULL, 'feeder_id' => $v['feeder_id']]);
-                            if ($check5 == NULL) {
-                                $this->db->trans_rollback();
-                                $res = formatResponse(400, [], [], 'File survey, sitax, khs list, feeder, distribusi must be filled', [], '');
-                                $this->response($res, 400);
-                            }
+                if ($check == NULL || $check2 == NULL || $check3 == NULL) {
+                    foreach ($check2 as $k => $v) {
+                        $check5 = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'khs_id' => $v['khs_id']]);
+                        if ($check5 == NULL) {
+                            $this->db->trans_rollback();
+                            $res = formatResponse(400, [], [], 'File survey, sitax, khs list, feeder, distribusi must be filled', [], '');
+                            $this->response($res, 400);
                         }
                     }
-                    $this->db->trans_rollback();
-                    $res = formatResponse(400, [], [], 'File survey, sitax, khs list, feeder must be filled', [], '');
-                    $this->response($res, 400);
                 } else {
                     $updateStatus = $this->GlobalModel->update('project', ['project_status' => 'KHS Check'], ['deleteAt' => NULL, 'project_id' => $project_id]);
                     if ($this->db->trans_status() === FALSE) {
@@ -2465,116 +2455,112 @@ class Project extends RestController
 
                 $this->db->trans_begin();
                 $check = $this->GlobalModel->getData('project_survey', ['deleteAt' => NULL, 'project_id' => $project_id, 'direktori' => 'survey']);
-                $check2 = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'project_id' => $project_id]);
+                $check2 = $this->GlobalModel->getData('project_khs', ['deleteAt' => NULL, 'project_id' => $project_id]);
                 $check3 = $this->GlobalModel->getData('project_sitax', ['deleteAt' => NULL, 'project_id' => $project_id]);
-                $check4 = $this->GlobalModel->getData('project_feeder', ['deleteAt' => NULL, 'project_id' => $project_id]);
-                if ($check == NULL || $check2 == NULL || $check3 == NULL || $check4 == NULL) {
-                    if ($check4 != NULL) {
-                        foreach ($check4 as $k => $v) {
-                            $check5 = $this->GlobalModel->getData('project_distribusi', ['deleteAt' => NULL, 'feeder_id' => $v['feeder_id']]);
-                            if ($check5 == NULL) {
-                                $this->db->trans_rollback();
-                                $res = formatResponse(400, [], [], 'File survey, sitax, khs list, feeder, distribusi must be filled', [], '');
-                                $this->response($res, 400);
-                            }
+                if ($check == NULL || $check2 == NULL || $check3 == NULL) {
+                    foreach ($check2 as $k => $v) {
+                        $check5 = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'khs_id' => $v['khs_id']]);
+                        if ($check5 == NULL) {
+                            $this->db->trans_rollback();
+                            $res = formatResponse(400, [], [], 'File survey, sitax, khs list, feeder, distribusi must be filled', [], '');
+                            $this->response($res, 400);
                         }
                     }
-                    $this->db->trans_rollback();
-                    $res = formatResponse(400, [], [], 'File survey, sitax, khs list, feeder must be filled', [], '');
-                    $this->response($res, 400);
                 } else {
-                    $getDataKHSList = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'project_id' => $project_id]);
-                    foreach ($getDataKHSList as $k => $v) {
-                        $witel_id = $getData['witel_id'];
-                        $stock_id = $v['stock_id'];
-                        $designator = $this->db
-                            ->select('d.designator_id,d.product_id,d.designator_code,d.designator_desc,dp.material_price,dp.service_price,d.createAt,d.updateAt,d.deleteAt')
-                            ->join('designator d', 'd.designator_id=dp.designator_id')
-                            ->where(['dp.deleteAt' => NULL, 'dp.package_id' => $getDataUser['package_id'], 'dp.designator_id' => $v['designator_id']])
-                            ->get('designator_package dp')
-                            ->row_array();
-                        if ($designator == NULL) {
-                            $this->db->trans_rollback();
-                            $res = formatResponse(400, [], [], 'Failed Approved Instalation, designator not found', [], '');
-                            $this->response($res, 400);
-                        }
-                        $product_id = $designator['product_id'];
-                        if ($v['khs_source'] == 'WITEL') {
-                            $getStockWitel = $this->GlobalModel->getData('stock_witel', ['stock_id' => $stock_id, 'witel_id' => $witel_id, 'product_id' => $product_id, 'deleteAt' => NULL], false);
-                            if ($this->db->trans_status() === FALSE) {
-                                $this->db->trans_rollback();
-                                $res = formatResponse(400, [], [], 'Failed Approved Instalation, product not found', [], '');
-                                $this->response($res, 400);
-                            }
-                            if ($getStockWitel == NULL) {
-                                $this->db->trans_rollback();
-                                $res = formatResponse(400, [], [], 'Failed Approved Instalation, product not found', [], '');
-                                $this->response($res, 400);
-                            }
-                            $getProduct = $this->GlobalModel->getData('product', ['product_id' => $product_id], false);
-                            if ($getProduct == NULL) {
-                                $this->db->trans_rollback();
-                                $res = formatResponse(400, [], [], 'Failed Approved Instalation, product not found', [], '');
-                                $this->response($res, 400);
-                            }
-                            $newStock = $getStockWitel['stock_qty'] - $v['khs_list_qty'];
-                            if ($newStock < 0) {
-                                $this->db->trans_rollback();
-                                $res = formatResponse(400, [], [], 'Failed Approved Instalation, stock product ' . $getProduct['product_name'] . ' is not enough', [], '');
-                                $this->response($res, 400);
-                            } else {
-                                $this->GlobalModel->update('stock_witel', ['stock_qty' => $newStock], ['stock_id' => $getStockWitel['stock_id']]);
-                                if ($this->db->trans_status() === FALSE) {
+                    foreach ($check2 as $k => $c) {
+                        $getDataKHSList = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'khs_id' => $c['khs_id']]);
+                        foreach ($getDataKHSList as $k => $v) {
+                            if ($v['tipe'] != 'GPON') {
+                                $designator = $this->db
+                                    ->select('d.designator_id,d.product_id,d.designator_code,d.designator_desc,dp.material_price,dp.service_price,d.createAt,d.updateAt,d.deleteAt')
+                                    ->join('designator d', 'd.designator_id=dp.designator_id')
+                                    ->where(['dp.deleteAt' => NULL, 'dp.package_id' => $getDataUser['package_id'], 'dp.designator_id' => $v['designator_id']])
+                                    ->get('designator_package dp')
+                                    ->row_array();
+                                if ($designator == NULL) {
                                     $this->db->trans_rollback();
-                                    $res = formatResponse(400, [], [], 'Failed to update stok', [], '');
+                                    $res = formatResponse(400, [], [], 'Failed Approved Instalation, designator not found', [], '');
                                     $this->response($res, 400);
                                 }
+                                $product_id = $designator['product_id'];
+                                if ($v['khs_source'] == 'WITEL') {
+                                    $witel_id = $getData['witel_id'];
+                                    $stock_id = $v['stock_id'];
+                                    if ($stock_id == NULL) {
+                                        $this->db->trans_rollback();
+                                        $res = formatResponse(400, [], [], 'Failed Approved Instalation, please select stock product before', [], '');
+                                        $this->response($res, 400);
+                                    }
+                                    $getStockWitel = $this->GlobalModel->getData('stock_witel', ['stock_id' => $stock_id, 'witel_id' => $witel_id, 'product_id' => $product_id, 'deleteAt' => NULL], false);
+                                    if ($this->db->trans_status() === FALSE) {
+                                        $this->db->trans_rollback();
+                                        $res = formatResponse(400, [], [], 'Failed Approved Instalation, product not found', [], '');
+                                        $this->response($res, 400);
+                                    }
+                                    if ($getStockWitel == NULL) {
+                                        $this->db->trans_rollback();
+                                        $res = formatResponse(400, [], [], 'Failed Approved Instalation, product not found', [], '');
+                                        $this->response($res, 400);
+                                    }
+                                    $getProduct = $this->GlobalModel->getData('product', ['product_id' => $product_id], false);
+                                    if ($getProduct == NULL) {
+                                        $this->db->trans_rollback();
+                                        $res = formatResponse(400, [], [], 'Failed Approved Instalation, product not found', [], '');
+                                        $this->response($res, 400);
+                                    }
+                                    $newStock = $getStockWitel['stock_qty'] - $v['khs_list_qty'];
+                                    if ($newStock < 0) {
+                                        $this->db->trans_rollback();
+                                        $res = formatResponse(400, [], [], 'Failed Approved Instalation, stock product ' . $getProduct['product_name'] . ' is not enough', [], '');
+                                        $this->response($res, 400);
+                                    } else {
+                                        $this->GlobalModel->update('stock_witel', ['stock_qty' => $newStock], ['stock_id' => $getStockWitel['stock_id']]);
+                                        if ($this->db->trans_status() === FALSE) {
+                                            $this->db->trans_rollback();
+                                            $res = formatResponse(400, [], [], 'Failed to update stok', [], '');
+                                            $this->response($res, 400);
+                                        }
 
-                                $params = [
-                                    'khs_list_material_price' => $designator['material_price'],
-                                    'khs_list_service_price' => $designator['service_price'],
-                                    'khs_list_material_total' => $designator['material_price'] * $v['khs_list_qty'],
-                                    'khs_list_service_total' => $designator['service_price'] * $v['khs_list_qty']
-                                ];
-                                $up = $this->GlobalModel->update('project_khs_list', $params, ['khs_list_id' => $v['khs_list_id']]);
-                                if ($this->db->trans_status() === FALSE) {
-                                    $this->db->trans_rollback();
-                                    $res = formatResponse(400, [], [], 'Failed to update khs list', [], '');
-                                    $this->response($res, 400);
+                                        $params = [
+                                            'khs_list_material_price' => $designator['material_price'],
+                                            'khs_list_service_price' => $designator['service_price'],
+                                            'khs_list_material_total' => $designator['material_price'] * $v['khs_list_qty'],
+                                            'khs_list_service_total' => $designator['service_price'] * $v['khs_list_qty']
+                                        ];
+                                        $up = $this->GlobalModel->update('project_khs_list', $params, ['khs_list_id' => $v['khs_list_id']]);
+                                        if ($this->db->trans_status() === FALSE) {
+                                            $this->db->trans_rollback();
+                                            $res = formatResponse(400, [], [], 'Failed to update khs list', [], '');
+                                            $this->response($res, 400);
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
-                    $material_price = 0;
-                    $service_price = 0;
-                    $getDataKHSList = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'project_id' => $project_id]);
-                    foreach ($getDataKHSList as $k =>  $v) {
-                        $material_price += $v['khs_list_material_total'];
-                        $service_price += $v['khs_list_service_total'];
-                    }
-                    $paramsKHS = [
-                        'project_id' => $project_id,
-                        'khs_material_total' => $material_price,
-                        'khs_service_total' => $service_price
-                    ];
-                    $checkKHS = $this->GlobalModel->getData('project_khs', ['project_id' => $project_id, 'deleteAt' => NULL], false);
-                    if ($checkKHS == NULL) {
-                        $up = $this->GlobalModel->insert('project_khs', $paramsKHS);
-                        if ($this->db->trans_status() === FALSE) {
-                            $this->db->trans_rollback();
-                            $res = formatResponse(400, [], [], 'Failed add khs', [], '');
-                            $this->response($res, 400);
+                        $material_price = 0;
+                        $service_price = 0;
+                        $getDataKHSList = $this->GlobalModel->getData('project_khs', ['deleteAt' => NULL, 'khs_id' => $c['khs_id']]);
+                        foreach ($getDataKHSList as $k =>  $v) {
+                            if ($v['tipe'] != 'GPON') {
+                                $material_price += $v['khs_list_material_total'];
+                                $service_price += $v['khs_list_service_total'];
+                            }
                         }
-                    } else {
-                        $up = $this->GlobalModel->update('project_khs', $paramsKHS, ['khs_id' => $checkKHS['khs_id']]);
-                        if ($this->db->trans_status() === FALSE) {
+                        $paramsKHS = [
+                            'project_id' => $project_id,
+                            'khs_material_total' => $material_price,
+                            'khs_service_total' => $service_price
+                        ];
+
+                        $up = $this->GlobalModel->update('project_khs', $paramsKHS, ['khs_id' => $c['khs_id']]);
+                        if ($this->db->trans_status() === FALSE && $up != FALSE) {
                             $this->db->trans_rollback();
                             $res = formatResponse(400, [], [], 'Failed update khs', [], '');
                             $this->response($res, 400);
                         }
                     }
                     $updateStatus = $this->GlobalModel->update('project', ['project_status' => 'Instalation'], ['deleteAt' => NULL, 'project_id' => $project_id]);
-                    if ($this->db->trans_status() === FALSE) {
+                    if ($this->db->trans_status() === FALSE && $updateStatus != FALSE) {
                         $this->db->trans_rollback();
                         $res = formatResponse(400, [], [], 'Failed update status project', [], '');
                         $this->response($res, 400);
