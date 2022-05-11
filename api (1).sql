@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 11, 2022 at 05:57 AM
+-- Generation Time: May 11, 2022 at 07:01 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 7.4.28
 
@@ -1125,6 +1125,7 @@ CREATE TABLE `project_odc` (
   `address` longtext NOT NULL,
   `lg` varchar(20) NOT NULL,
   `lt` varchar(20) NOT NULL,
+  `benchmark_address` text NOT NULL,
   `port` varchar(20) NOT NULL,
   `core` varchar(20) NOT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
@@ -1153,6 +1154,8 @@ CREATE TABLE `project_odp` (
   `lt` varchar(20) NOT NULL,
   `core` varchar(20) NOT NULL,
   `core_opsi` varchar(20) DEFAULT NULL,
+  `distribusi_core` varchar(12) NOT NULL,
+  `distribusi_core_opsi` varchar(12) NOT NULL,
   `capacity` varchar(20) NOT NULL,
   `note` longtext NOT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
