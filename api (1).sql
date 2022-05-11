@@ -632,7 +632,7 @@ CREATE TABLE `project_gpon` (
   `slot` varchar(20) NOT NULL,
   `port` varchar(20) NOT NULL,
   `output_feeder` varchar(20) NOT NULL,
-  `outout_pasif` varchar(20) NOT NULL,
+  `output_pasif` varchar(20) NOT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updateAt` datetime DEFAULT NULL,
   `deleteAt` datetime DEFAULT NULL
