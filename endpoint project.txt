@@ -268,7 +268,7 @@
 
 
 
-- add data teknis - url : https://api.cosisma.com/project/addDataTeknis/id/{project_id}
+- add data teknis - url : https://v3.api.cosisma.com/project/addDataTeknis/id/{project_id}
               - method : POST
               - body : - 'data_teknis' | 'example' : [
                                                       {
@@ -321,8 +321,8 @@
                                                       }
                                                   ] 
 
-- delete data teknis - url : https://api.cosisma.com/project/deleteDataTeknis/id/{khs_id}
+- delete data teknis - url : https://v3.api.cosisma.com/project/deleteDataTeknis/id/{khs_id}
               - method : DELETE
               
-- delete data teknis list - url : https://api.cosisma.com/project/deleteDataTeknisList/id/{khs_list_id}
+- delete data teknis list - url : https://v3.api.cosisma.com/project/deleteDataTeknisList/id/{khs_list_id}
               - method : DELETE
