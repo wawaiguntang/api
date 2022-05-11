@@ -271,70 +271,55 @@
 - add data teknis - url : https://api.cosisma.com/project/addDataTeknis/id/{project_id}
               - method : POST
               - body : - 'data_teknis' | 'example' : [
-                                                        {
-                                                            "project_id": 1,
-                                                            "khs_list": [
-                                                                {
-                                                                    "tipe": "GPON",
-                                                                    "designator_id": 1,
-                                                                    "khs_list_qty": 30,
-                                                                    "GPON": {
-                                                                        "gpon": 30,
-                                                                        "slot": 30,
-                                                                        "port": 30,
-                                                                        "output_feeder": 30,
-                                                                        "output_pasif": 30
-                                                                    }
-                                                                }
-                                                            ]
-                                                        },
-                                                        {
-                                                            "project_id": 1,
-                                                            "khs_list": [
-                                                                {
-                                                                    "tipe": "Feeder",
-                                                                    "designator_id": 1,
-                                                                    "khs_list_qty": 30
-                                                                }
-                                                            ]
-                                                        },
-                                                        {
-                                                            "project_id": 1,
-                                                            "khs_list": [
-                                                                {
-                                                                    "tipe": "ODC",
-                                                                    "designator_id": 1,
-                                                                    "khs_list_qty": 30,
-                                                                    "ODC": {
-                                                                        "address": "Jl.Cempaka Raya",
-                                                                        "lg": "0.234324",
-                                                                        "lt": "0.4647345",
-                                                                        "benchmark_address": "Rumah"
-                                                                    }
-                                                                }
-                                                            ]
-                                                        },
-                                                        {
-                                                            "project_id": 1,
-                                                            "khs_list": [
-                                                                {
-                                                                    "tipe": "ODP",
-                                                                    "designator_id": 1,
-                                                                    "khs_list_qty": 30,
-                                                                    "ODP": {
-                                                                        "address": "Jl.Cempaka Raya",
-                                                                        "lg": "0.234324",
-                                                                        "lt": "0.4647345",
-                                                                        "benchmark_address": "Rumah",
-                                                                        "core" => "Core",
-                                                                        "core_opsi" => "Core opsi", // null
-                                                                        "distribusi_core" => "Core distribusi",
-                                                                        "distribusi_core_opsi" => "Core distribusi opsi" //null
-                                                                    }
-                                                                }
-                                                            ]
-                                                        }
-                                                    ] 
+                                                      {
+                                                          "project_id": 31,
+                                                          "khs_list": [
+                                                              {
+                                                                  "tipe": "GPON",
+                                                                  "designator_id": 1,
+                                                                  "khs_list_qty": 30,
+                                                                  "GPON": {
+                                                                      "gpon": 30,
+                                                                      "slot": 30,
+                                                                      "port": 30,
+                                                                      "output_feeder": 30,
+                                                                      "output_pasif": 30
+                                                                  }
+                                                              },
+                                                              {
+                                                                  "tipe": "Feeder",
+                                                                  "designator_id": 1,
+                                                                  "khs_list_qty": 30
+                                                              },
+                                                              {
+                                                                  "tipe": "ODC",
+                                                                  "designator_id": 1,
+                                                                  "khs_list_qty": 30,
+                                                                  "ODC": {
+                                                                      "address": "Jl.Cempaka Raya",
+                                                                      "lg": "0.234324",
+                                                                      "lt": "0.4647345",
+                                                                      "benchmark_address": "Rumah"
+                                                                  }
+                                                              },
+                                                              {
+                                                                  "tipe": "ODP",
+                                                                  "designator_id": 1,
+                                                                  "khs_list_qty": 30,
+                                                                  "ODP": {
+                                                                      "address": "Jl.Cempaka Raya",
+                                                                      "lg": "0.234324",
+                                                                      "lt": "0.4647345",
+                                                                      "benchmark_address": "Rumah",
+                                                                      "core": "12",
+                                                                      "core_opsi": "24",
+                                                                      "distribusi_core": "24",
+                                                                      "distribusi_core_opsi": "18"
+                                                                  }
+                                                              }
+                                                          ]
+                                                      }
+                                                  ] 
 
 - delete data teknis - url : https://api.cosisma.com/project/deleteDataTeknis/id/{khs_id}
               - method : DELETE
