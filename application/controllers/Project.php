@@ -128,17 +128,17 @@ class Project extends RestController
                     ->result_array();
                 $temp = [];
                 foreach ($khslist as $k => $v) {
-                    if($v['tipe'] == 'Feeder'){
-                        $dataTipe = $this->db->get_where('project_feeder',['deleteAt' => NULL,'project_feeder_id' => $v['tipe_id']])->row_array();
-                    }elseif($v['tipe'] == 'Penggelaran'){
-                        $dataTipe = $this->db->get_where('project_penggelaran',['deleteAt' => NULL,'project_penggelaran_id' => $v['tipe_id']])->row_array();
-                    }elseif($v['tipe'] == 'ODP'){
-                        $dataTipe = $this->db->get_where('project_odc',['deleteAt' => NULL,'project_odc_id' => $v['tipe_id']])->row_array();
-                    }elseif($v['tipe'] == 'ODC'){
-                        $dataTipe = $this->db->get_where('project_odp',['deleteAt' => NULL,'project_odp_id' => $v['tipe_id']])->row_array();
-                    }elseif($v['tipe'] == 'GPON'){
-                        $dataTipe = $this->db->get_where('project_gpon',['deleteAt' => NULL,'project_gpon_id' => $v['tipe_id']])->row_array();
-                    }else{
+                    if ($v['tipe'] == 'Feeder') {
+                        $dataTipe = $this->db->get_where('project_feeder', ['deleteAt' => NULL, 'project_feeder_id' => $v['tipe_id']])->row_array();
+                    } elseif ($v['tipe'] == 'Penggelaran') {
+                        $dataTipe = $this->db->get_where('project_penggelaran', ['deleteAt' => NULL, 'project_penggelaran_id' => $v['tipe_id']])->row_array();
+                    } elseif ($v['tipe'] == 'ODP') {
+                        $dataTipe = $this->db->get_where('project_odc', ['deleteAt' => NULL, 'project_odc_id' => $v['tipe_id']])->row_array();
+                    } elseif ($v['tipe'] == 'ODC') {
+                        $dataTipe = $this->db->get_where('project_odp', ['deleteAt' => NULL, 'project_odp_id' => $v['tipe_id']])->row_array();
+                    } elseif ($v['tipe'] == 'GPON') {
+                        $dataTipe = $this->db->get_where('project_gpon', ['deleteAt' => NULL, 'project_gpon_id' => $v['tipe_id']])->row_array();
+                    } else {
                         $res = formatResponse(404, [], [], 'Tipe not found', [], '');
                         $this->response($res, 404);
                     }
@@ -1263,27 +1263,101 @@ class Project extends RestController
                                 }
                                 $tipe_id = $this->db->insert_id();
                             } elseif ($t['tipe'] == 'ODP') {
-                                $insertODP = $this->db->insert('project_odp', [
-                                    'createAt' => date('Y-m-d H:i:s')
-                                ]);
-                                if (!$insertODP) {
+                                if (isset($t['ODP']) && $t['ODP'] != NULL) {
+                                    $make2 = $this->validator->make($t['ODP'], [
+                                        'address' => 'required',
+                                        'lg' => 'required',
+                                        'lt' => 'required',
+                                        'benchmark_address' => 'required',
+                                        'core' => 'required',
+                                        'distribusi_core' => 'required',
+                                    ]);
+
+                                    $make2->setAliases([
+                                        'address' => 'Alamat',
+                                        'lg' => 'Longitude',
+                                        'lt' => 'Latitude',
+                                        'benchmark_address' => 'Patokan',
+                                        'core' => 'Core',
+                                        'distribusi_core' => 'Core distribusi',
+                                    ]);
+
+                                    $make2->validate();
+
+                                    if ($make2->fails()) {
+                                        $this->db->trans_rollback();
+                                        $errors = $make2->errors();
+                                        $err = $errors->firstOfAll();
+                                        $res = formatResponse(400, [], $err, '', [], '');
+                                        $this->response($res, 400);
+                                    }
+                                    $insertODP = $this->db->insert('project_odp', [
+                                        'address' => $t['ODP']['address'],
+                                        'lg' => $t['ODP']['lg'],
+                                        'lt' => $t['ODP']['lt'],
+                                        'benchmark_address' => $t['ODP']['benchmark_address'],
+                                        'core' => $t['ODP']['core'],
+                                        'core_opsi' => (isset($t['ODP']['core_opsi'])) ? $t['ODP']['core_opsi'] : NULL,
+                                        'distribusi_core' => $t['ODP']['distribusi_core'],
+                                        'distribusi_core_opsi' => (isset($t['ODP']['distribusi_core_opsi'])) ? $t['ODP']['distribusi_core_opsi'] : NULL,
+                                        'createAt' => date('Y-m-d H:i:s')
+                                    ]);
+                                    if (!$insertODP) {
+                                        $this->db->trans_rollback();
+                                        $res = formatResponse(400, [], [], 'Failed to add data teknis', [], '');
+                                        $this->response($res, 400);
+                                    }
+                                    $tipe_id = $this->db->insert_id();
+                                } else {
                                     $this->db->trans_rollback();
-                                    $res = formatResponse(400, [], [], 'Failed to add data teknis', [], '');
+                                    $res = formatResponse(400, [], [], 'Data ODP can\'t empty', [], '');
                                     $this->response($res, 400);
                                 }
-                                $tipe_id = $this->db->insert_id();
                             } elseif ($t['tipe'] == 'ODC') {
-                                $insertODC = $this->db->insert('project_odc', [
-                                    'createAt' => date('Y-m-d H:i:s')
-                                ]);
-                                if (!$insertODC) {
+                                if (isset($t['ODC']) && $t['ODC'] != NULL) {
+                                    $make2 = $this->validator->make($t['ODC'], [
+                                        'address' => 'required',
+                                        'lg' => 'required',
+                                        'lt' => 'required',
+                                        'benchmark_address' => 'required',
+                                    ]);
+
+                                    $make2->setAliases([
+                                        'address' => 'Alamat',
+                                        'lg' => 'Longitude',
+                                        'lt' => 'Latitude',
+                                        'benchmark_address' => 'Patokan',
+                                    ]);
+
+                                    $make2->validate();
+
+                                    if ($make2->fails()) {
+                                        $this->db->trans_rollback();
+                                        $errors = $make2->errors();
+                                        $err = $errors->firstOfAll();
+                                        $res = formatResponse(400, [], $err, '', [], '');
+                                        $this->response($res, 400);
+                                    }
+                                    $insertODC = $this->db->insert('project_odc', [
+                                        'address' => $t['ODC']['address'],
+                                        'lg' => $t['ODC']['lg'],
+                                        'lt' => $t['ODC']['lt'],
+                                        'benchmark_address' => $t['ODC']['benchmark_address'],
+                                        'createAt' => date('Y-m-d H:i:s')
+                                    ]);
+                                    if (!$insertODC) {
+                                        $this->db->trans_rollback();
+                                        $res = formatResponse(400, [], [], 'Failed to add data teknis', [], '');
+                                        $this->response($res, 400);
+                                    }
+                                    $tipe_id = $this->db->insert_id();
+                                } else {
                                     $this->db->trans_rollback();
-                                    $res = formatResponse(400, [], [], 'Failed to add data teknis', [], '');
+                                    $res = formatResponse(400, [], [], 'Data ODC can\'t empty', [], '');
                                     $this->response($res, 400);
                                 }
-                                $tipe_id = $this->db->insert_id();
                             } elseif ($t['tipe'] == 'GPON') {
-                                if (isset($t['GPON'])) {
+                                if (isset($t['GPON']) && $t['GPON'] != NULL) {
                                     $make2 = $this->validator->make($t['GPON'], [
                                         'gpon' => 'required|integer',
                                         'slot' => 'required|integer',
@@ -1330,7 +1404,7 @@ class Project extends RestController
                                 }
                             } else {
                                 $this->db->trans_rollback();
-                                $res = formatResponse(400, [], [], 'Failed to add data teknis', [], '');
+                                $res = formatResponse(400, [], [], 'Data GPON can\'t empty', [], '');
                                 $this->response($res, 400);
                             }
                             $paramsKHSList = [
@@ -1400,7 +1474,7 @@ class Project extends RestController
             $this->response($res, 400);
         }
     }
-    
+
     public function deleteDataTeknisList_delete()
     {
         $permission = checkPermission($this->payload['data']['email'], ['DDIS']);
@@ -1421,7 +1495,7 @@ class Project extends RestController
             if ($getDataKHS == NULL) {
                 $res = formatResponse(404, [], [], 'Data KHS not found', [], '');
                 $this->response($res, 404);
-            }else{
+            } else {
                 $getDataProject = $this->GlobalModel->getData('project', ['deleteAt' => NULL, 'project_id' => $getDataKHS['project_id']], false);
                 if ($getDataProject == NULL) {
                     $res = formatResponse(404, [], [], 'Data project not found', [], '');

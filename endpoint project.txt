@@ -297,6 +297,42 @@
                                                                     "khs_list_qty": 30
                                                                 }
                                                             ]
+                                                        },
+                                                        {
+                                                            "project_id": 1,
+                                                            "khs_list": [
+                                                                {
+                                                                    "tipe": "ODC",
+                                                                    "designator_id": 1,
+                                                                    "khs_list_qty": 30,
+                                                                    "ODC": {
+                                                                        "address": "Jl.Cempaka Raya",
+                                                                        "lg": "0.234324",
+                                                                        "lt": "0.4647345",
+                                                                        "benchmark_address": "Rumah"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "project_id": 1,
+                                                            "khs_list": [
+                                                                {
+                                                                    "tipe": "ODP",
+                                                                    "designator_id": 1,
+                                                                    "khs_list_qty": 30,
+                                                                    "ODP": {
+                                                                        "address": "Jl.Cempaka Raya",
+                                                                        "lg": "0.234324",
+                                                                        "lt": "0.4647345",
+                                                                        "benchmark_address": "Rumah",
+                                                                        "core" => "Core",
+                                                                        "core_opsi" => "Core opsi", // null
+                                                                        "distribusi_core" => "Core distribusi",
+                                                                        "distribusi_core_opsi" => "Core distribusi opsi" //null
+                                                                    }
+                                                                }
+                                                            ]
                                                         }
                                                     ] 
 
