@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.3
+-- version 4.9.7
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Apr 26, 2022 at 07:13 PM
--- Server version: 10.4.24-MariaDB
--- PHP Version: 7.4.28
+-- Host: localhost:3306
+-- Generation Time: May 12, 2022 at 01:27 PM
+-- Server version: 10.3.34-MariaDB
+-- PHP Version: 7.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -18,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `api`
+-- Database: `hmanfqxr_new_api`
 --
 
 -- --------------------------------------------------------
@@ -357,17 +358,17 @@ INSERT INTO `permission` (`permissionCode`, `permission`, `description`, `module
 (87, 'CTEC', 'Add technician', 15, '2022-03-19 09:04:39', NULL, NULL),
 (88, 'UTEC', 'Update technician', 15, '2022-03-19 09:04:39', NULL, NULL),
 (89, 'CUSI', 'Create and update sitax', 15, '2022-03-19 09:04:39', NULL, NULL),
-(90, 'CFED', 'Create feeder', 15, '2022-03-19 09:04:39', NULL, NULL),
-(91, 'UFED', 'Update feeder', 15, '2022-03-19 09:04:39', NULL, NULL),
-(92, 'DFED', 'Delete feeder', 15, '2022-03-19 09:04:39', NULL, NULL),
-(93, 'CDIS', 'Create distribusi', 15, '2022-03-19 09:04:39', NULL, NULL),
-(94, 'UDIS', 'Update distribusi', 15, '2022-03-19 09:04:39', NULL, NULL),
-(95, 'DDIS', 'Delete distribusi', 15, '2022-03-19 09:04:39', NULL, NULL),
+(90, 'CFED', 'Create feeder', 15, '2022-03-19 09:04:39', '2022-05-12 12:21:31', '2022-05-12 12:20:38'),
+(91, 'UFED', 'Update feeder', 15, '2022-03-19 09:04:39', '2022-05-12 12:21:31', '2022-05-12 12:20:38'),
+(92, 'DFED', 'Delete feeder', 15, '2022-03-19 09:04:39', '2022-05-12 12:21:31', '2022-05-12 12:20:38'),
+(93, 'CDIS', 'Create distribusi', 15, '2022-03-19 09:04:39', '2022-05-12 12:21:31', '2022-05-12 12:20:38'),
+(94, 'UDIS', 'Update distribusi', 15, '2022-03-19 09:04:39', '2022-05-12 12:21:31', '2022-05-12 12:20:38'),
+(95, 'DDIS', 'Delete distribusi', 15, '2022-03-19 09:04:39', '2022-05-12 12:21:31', '2022-05-12 12:20:38'),
 (96, 'CFLS', 'Add file survey', 15, '2022-03-19 09:04:39', NULL, NULL),
 (97, 'DFLS', 'Delete file survey', 15, '2022-03-19 09:04:39', NULL, NULL),
-(98, 'CKHSL', 'Add list khs', 15, '2022-03-19 09:04:39', NULL, NULL),
-(99, 'UKHSL', 'Update list khs', 15, '2022-03-19 09:04:39', NULL, NULL),
-(100, 'DKHSL', 'Delete list khs', 15, '2022-03-19 09:04:39', NULL, NULL),
+(98, 'CKHSL', 'Add list khs', 15, '2022-03-19 09:04:39', '2022-05-12 12:21:31', '2022-05-12 12:20:38'),
+(99, 'UKHSL', 'Update list khs', 15, '2022-03-19 09:04:39', '2022-05-12 12:21:31', '2022-05-12 12:20:38'),
+(100, 'DKHSL', 'Delete list khs', 15, '2022-03-19 09:04:39', '2022-05-12 12:21:31', '2022-05-12 12:20:38'),
 (101, 'CTKHS', 'Change status from survey to KHS Check', 15, '2022-03-19 09:04:39', NULL, NULL),
 (102, 'CMKHS', 'Select source material', 15, '2022-03-19 09:04:39', NULL, NULL),
 (103, 'CSAI', 'Change status from instalation to approve instalation', 15, '2022-03-19 09:04:39', NULL, NULL),
@@ -392,7 +393,11 @@ INSERT INTO `permission` (`permissionCode`, `permission`, `description`, `module
 (122, 'UJOB', 'Update estimation date', 15, '2022-03-23 01:14:23', NULL, NULL),
 (125, 'RSTOCKHO', 'See stock HO', 16, '2022-03-23 23:17:01', NULL, NULL),
 (126, 'RSTOCKWITEL', 'See stock WITEL', 16, '2022-03-23 23:17:01', NULL, NULL),
-(127, 'RSTOCKBYWITEL', 'See stock witel by witel user', 16, '2022-03-23 23:17:36', NULL, NULL);
+(127, 'RSTOCKBYWITEL', 'See stock witel by witel user', 16, '2022-03-23 23:17:36', NULL, NULL),
+(128, 'CBDT', 'Create first data teknis', 15, '2022-03-23 01:13:18', NULL, NULL),
+(129, 'DDTEK', 'Delete data teknis', 15, '2022-03-23 01:13:18', NULL, NULL),
+(130, 'DDTEKLIST', 'Delete list data teknis', 15, '2022-03-23 01:13:18', NULL, NULL),
+(131, 'CODT', 'Create one data teknis', 15, '2022-03-23 01:13:18', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -541,7 +546,7 @@ INSERT INTO `project` (`project_id`, `project_code`, `cat_id`, `label_cat`, `pro
 (28, '12131414', 5, 0, '2022-04-07', 'Survey', 1, 'STTF tahap 2', NULL, NULL, '2022-04-09', '2022-04-14', '2022-04-07 20:49:51', '2022-04-07 20:51:24', NULL),
 (29, 'Api12', 3, 0, '2022-04-11', 'Survey', 1, 'Notes catatan', NULL, NULL, '2022-04-11', '2022-04-30', '2022-04-11 20:25:05', '2022-04-11 20:25:58', NULL),
 (30, '12', 16, 0, '2022-04-17', 'Survey', 1, 'asdasd', NULL, NULL, '2022-04-18', '2022-04-20', '2022-04-17 22:20:35', '2022-04-17 22:21:37', NULL),
-(31, 'Test', 6, 0, '2022-04-22', 'Survey', 1, '', NULL, NULL, '2022-04-22', '2022-04-30', '2022-04-22 15:19:39', '2022-04-22 15:20:08', NULL);
+(31, 'Test', 6, 0, '2022-04-22', 'Survey', 1, '', NULL, NULL, '2022-04-22', '2022-04-30', '2022-04-22 15:19:39', '2022-05-11 18:44:02', NULL);
 
 -- --------------------------------------------------------
 
@@ -618,7 +623,14 @@ INSERT INTO `project_feeder` (`project_feeder_id`, `createAt`, `updateAt`, `dele
 (16, '2022-04-05 20:08:19', NULL, NULL),
 (17, '2022-04-05 20:22:29', NULL, NULL),
 (18, '2022-04-07 19:24:04', NULL, NULL),
-(19, '2022-04-07 20:56:08', NULL, NULL);
+(19, '2022-04-07 20:56:08', NULL, NULL),
+(21, '2022-05-11 05:48:01', NULL, NULL),
+(22, '2022-05-11 10:26:36', NULL, NULL),
+(23, '2022-05-11 10:29:06', NULL, NULL),
+(24, '2022-05-11 10:31:42', NULL, NULL),
+(25, '2022-05-11 14:20:54', NULL, NULL),
+(26, '2022-05-11 14:21:56', NULL, NULL),
+(27, '2022-05-11 14:35:33', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -632,11 +644,21 @@ CREATE TABLE `project_gpon` (
   `slot` varchar(20) NOT NULL,
   `port` varchar(20) NOT NULL,
   `output_feeder` varchar(20) NOT NULL,
-  `outout_pasif` varchar(20) NOT NULL,
+  `output_pasif` varchar(20) NOT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updateAt` datetime DEFAULT NULL,
   `deleteAt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `project_gpon`
+--
+
+INSERT INTO `project_gpon` (`project_gpon_id`, `gpon`, `slot`, `port`, `output_feeder`, `output_pasif`, `createAt`, `updateAt`, `deleteAt`) VALUES
+(2, '30', '30', '30', '30', '30', '2022-05-11 05:48:01', NULL, NULL),
+(3, '30', '4', '3', '45', '23', '2022-05-12 06:03:47', NULL, NULL),
+(4, '30', '4', '3', '45', '23', '2022-05-12 06:22:08', NULL, NULL),
+(5, '30', '4', '3', '45', '45', '2022-05-12 06:22:15', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -992,8 +1014,8 @@ INSERT INTO `project_job` (`project_job_id`, `project_id`, `job_id`, `date_start
 (328, 30, 9, NULL, NULL, NULL, NULL, '2022-04-17 22:20:35', NULL, NULL),
 (329, 30, 10, NULL, NULL, NULL, NULL, '2022-04-17 22:20:35', NULL, NULL),
 (330, 30, 11, NULL, NULL, NULL, NULL, '2022-04-17 22:20:35', NULL, NULL),
-(331, 31, 1, '2022-04-22', NULL, NULL, NULL, '2022-04-22 15:19:39', NULL, NULL),
-(332, 31, 2, NULL, NULL, NULL, NULL, '2022-04-22 15:19:39', NULL, NULL),
+(331, 31, 1, '2022-04-22', '2022-05-11', NULL, NULL, '2022-04-22 15:19:39', NULL, NULL),
+(332, 31, 2, '2022-05-11', NULL, NULL, NULL, '2022-04-22 15:19:39', NULL, NULL),
 (333, 31, 3, NULL, NULL, NULL, NULL, '2022-04-22 15:19:39', NULL, NULL),
 (334, 31, 4, NULL, NULL, NULL, NULL, '2022-04-22 15:19:39', NULL, NULL),
 (335, 31, 5, NULL, NULL, NULL, NULL, '2022-04-22 15:19:39', NULL, NULL),
@@ -1046,7 +1068,15 @@ INSERT INTO `project_khs` (`khs_id`, `project_id`, `khs_source`, `khs_material_t
 (18, 20, '', 0, 0, '2022-04-05 20:17:29', NULL, NULL),
 (19, 19, '', 10000, 2000, '2022-04-05 20:34:16', NULL, NULL),
 (20, 15, '', 1000000, 2000000, '2022-04-06 09:44:05', NULL, NULL),
-(21, 27, '', 3000000, 400000, '2022-04-07 19:42:42', NULL, NULL);
+(21, 27, '', 3000000, 400000, '2022-04-07 19:42:42', NULL, NULL),
+(28, 31, '', 0, 0, '2022-05-11 12:48:01', NULL, NULL),
+(29, 28, '', 0, 0, '2022-05-11 17:26:36', NULL, NULL),
+(30, 30, '', 0, 0, '2022-05-11 17:29:06', '2022-05-11 21:31:27', '2022-05-11 14:31:27'),
+(31, 30, '', 0, 0, '2022-05-11 17:29:48', '2022-05-11 21:31:22', '2022-05-11 14:31:22'),
+(32, 30, '', 0, 0, '2022-05-11 17:31:42', '2022-05-11 21:31:18', '2022-05-11 14:31:18'),
+(33, 30, '', 0, 0, '2022-05-11 21:20:54', '2022-05-11 21:28:33', '2022-05-11 14:28:33'),
+(34, 30, '', 0, 0, '2022-05-11 21:21:56', '2022-05-11 21:28:26', '2022-05-11 14:28:26'),
+(35, 30, '', 0, 0, '2022-05-11 21:35:33', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1065,7 +1095,7 @@ CREATE TABLE `project_khs_list` (
   `khs_list_service_price` bigint(20) NOT NULL,
   `khs_list_material_total` bigint(20) NOT NULL,
   `khs_list_service_total` bigint(20) NOT NULL,
-  `khs_source` enum('TA','WITEL') DEFAULT NULL,
+  `khs_source` enum('TA','WITEL') DEFAULT 'TA',
   `stock_id` int(11) DEFAULT NULL,
   `userCode` int(11) NOT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
@@ -1110,7 +1140,23 @@ INSERT INTO `project_khs_list` (`khs_list_id`, `tipe`, `tipe_id`, `khs_id`, `des
 (30, 'Feeder', 0, 27, 2, 10, 300000, 40000, 3000000, 400000, 'WITEL', 6, 55, '2022-04-07 19:24:46', '2022-04-07 19:42:42', NULL),
 (31, 'Feeder', 0, 29, 1, 1000, 0, 0, 0, 0, 'TA', NULL, 52, '2022-04-11 20:29:00', NULL, NULL),
 (32, 'Feeder', 0, 29, 1, 17, 0, 0, 0, 0, 'TA', NULL, 52, '2022-04-12 11:12:42', NULL, NULL),
-(33, 'Feeder', 0, 29, 2, 10, 0, 0, 0, 0, 'TA', NULL, 52, '2022-04-17 20:30:45', NULL, NULL);
+(33, 'Feeder', 0, 29, 2, 10, 0, 0, 0, 0, 'TA', NULL, 52, '2022-04-17 20:30:45', NULL, NULL),
+(34, 'GPON', 1, 24, 1, 30, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 12:32:40', '2022-05-11 16:12:27', NULL),
+(35, 'Feeder', 20, 25, 1, 30, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 12:32:40', '2022-05-11 16:13:10', NULL),
+(36, 'ODC', 1, 26, 1, 30, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 12:32:40', '2022-05-11 16:13:06', NULL),
+(37, 'ODP', 1, 27, 1, 30, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 12:32:40', '2022-05-11 16:12:54', NULL),
+(38, 'GPON', 2, 28, 1, 30, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 12:48:01', '2022-05-11 16:12:50', NULL),
+(39, 'Feeder', 21, 28, 1, 30, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 12:48:01', '2022-05-11 16:12:46', NULL),
+(40, 'ODC', 2, 28, 1, 30, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 12:48:01', '2022-05-11 16:12:41', NULL),
+(41, 'ODP', 2, 28, 1, 30, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 12:48:01', '2022-05-11 16:12:36', NULL),
+(42, 'Feeder', 22, 29, 2, 11, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 17:26:36', NULL, NULL),
+(43, 'Feeder', 23, 30, 1, 11, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 17:29:06', '2022-05-11 21:14:09', '2022-05-11 14:14:09'),
+(44, 'Penggelaran', 1, 31, 3, 11, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 17:29:48', '2022-05-11 21:10:05', '2022-05-11 14:10:05'),
+(45, 'Feeder', 24, 32, 2, 10, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 17:31:42', '2022-05-11 21:08:54', '2022-05-11 14:08:54'),
+(46, 'Feeder', 25, 33, 4, 13, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 21:20:54', '2022-05-11 21:21:13', '2022-05-11 14:21:13'),
+(47, 'Feeder', 26, 34, 3, 14, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 21:21:56', NULL, NULL),
+(48, 'Feeder', 27, 35, 2, 14, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-11 21:35:33', NULL, NULL),
+(49, 'GPON', 3, 35, 2, 50, 0, 0, 0, 0, 'TA', NULL, 0, '2022-05-12 13:03:47', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1125,12 +1171,20 @@ CREATE TABLE `project_odc` (
   `address` longtext NOT NULL,
   `lg` varchar(20) NOT NULL,
   `lt` varchar(20) NOT NULL,
+  `benchmark_address` text NOT NULL,
   `port` varchar(20) NOT NULL,
   `core` varchar(20) NOT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updateAt` datetime DEFAULT NULL,
   `deleteAt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `project_odc`
+--
+
+INSERT INTO `project_odc` (`project_odc_id`, `odc`, `capacity`, `address`, `lg`, `lt`, `benchmark_address`, `port`, `core`, `createAt`, `updateAt`, `deleteAt`) VALUES
+(2, '', '', 'Jl.Cempaka Raya', '0.234324', '0.4647345', 'Rumah', '', '', '2022-05-11 05:48:01', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1153,12 +1207,21 @@ CREATE TABLE `project_odp` (
   `lt` varchar(20) NOT NULL,
   `core` varchar(20) NOT NULL,
   `core_opsi` varchar(20) DEFAULT NULL,
+  `distribusi_core` varchar(12) NOT NULL,
+  `distribusi_core_opsi` varchar(12) NOT NULL,
   `capacity` varchar(20) NOT NULL,
   `note` longtext NOT NULL,
   `createAt` datetime NOT NULL DEFAULT current_timestamp(),
   `updateAt` datetime DEFAULT NULL,
   `deleteAt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `project_odp`
+--
+
+INSERT INTO `project_odp` (`project_odp_id`, `odp`, `kukd`, `dropcore`, `odp_valid_3`, `hasil_ukur_odp_valid_3`, `odp_valid_4`, `hasil_ukur_odp_valid_4`, `address`, `benchmark_address`, `lg`, `lt`, `core`, `core_opsi`, `distribusi_core`, `distribusi_core_opsi`, `capacity`, `note`, `createAt`, `updateAt`, `deleteAt`) VALUES
+(2, '', '', '', NULL, NULL, NULL, NULL, 'Jl.Cempaka Raya', 'Rumah', '0.234324', '0.4647345', '12', '24', '24', '18', '', '', '2022-05-11 05:48:01', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1172,6 +1235,13 @@ CREATE TABLE `project_penggelaran` (
   `updateAt` datetime DEFAULT NULL ON UPDATE current_timestamp(),
   `deleteAt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `project_penggelaran`
+--
+
+INSERT INTO `project_penggelaran` (`project_penggelaran_id`, `createAt`, `updateAt`, `deleteAt`) VALUES
+(1, '2022-05-11 10:29:48', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1212,7 +1282,8 @@ INSERT INTO `project_sitax` (`sitax_id`, `project_id`, `sitax_list`, `sitax_tota
 (16, 27, NULL, 0, '2022-04-07 19:24:10', NULL, NULL),
 (17, 29, '[\"rw\",\"kelurahan\",\"rt\"]', 1000000, '2022-04-11 20:28:45', NULL, NULL),
 (18, 30, '[\"rt\",\"rw\"]', 1000000, '2022-04-17 22:21:54', NULL, NULL),
-(19, 31, '[\"rt\",\"rw\",\"kelurahan\"]', 3000000, '2022-04-22 15:20:26', NULL, NULL);
+(19, 31, '[\"rt\",\"rw\",\"kelurahan\"]', 3000000, '2022-04-22 15:20:26', NULL, NULL),
+(20, 28, NULL, 0, '2022-05-11 17:19:50', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1265,7 +1336,7 @@ INSERT INTO `project_survey` (`survey_id`, `project_id`, `survey_file`, `direkto
 (28, 19, '624c489a970c62022_04_05.jpeg', 'labeling', '2022-04-05 20:48:10', NULL, NULL),
 (29, 27, '624ed7fb717912022_04_07.png', 'survey', '2022-04-07 19:24:27', NULL, NULL),
 (30, 27, '624edd35395de2022_04_07.png', 'instalasi', '2022-04-07 19:46:45', NULL, NULL),
-(31, 30, '625c30f316e5c2022_04_17.png', 'survey', '2022-04-17 22:23:31', NULL, NULL);
+(31, 31, '625c30f316e5c2022_04_17.png', 'survey', '2022-04-17 22:23:31', '2022-05-11 15:27:58', NULL);
 
 -- --------------------------------------------------------
 
@@ -1682,7 +1753,11 @@ INSERT INTO `role_permission` (`rpCode`, `permissionCode`, `roleCode`, `createAt
 (244, 99, 10, '2022-03-27 23:19:55', NULL, NULL),
 (245, 34, 13, '2022-03-30 18:16:55', NULL, NULL),
 (246, 126, 13, '2022-03-30 18:18:43', NULL, NULL),
-(247, 127, 13, '2022-03-30 18:19:29', NULL, NULL);
+(247, 127, 13, '2022-03-30 18:19:29', NULL, NULL),
+(248, 128, 1, '2022-03-19 09:04:40', NULL, NULL),
+(249, 129, 1, '2022-03-19 09:04:40', NULL, NULL),
+(250, 130, 1, '2022-03-19 09:04:40', NULL, NULL),
+(251, 131, 1, '2022-03-19 09:04:40', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2198,7 +2273,7 @@ ALTER TABLE `package`
 -- AUTO_INCREMENT for table `permission`
 --
 ALTER TABLE `permission`
-  MODIFY `permissionCode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
+  MODIFY `permissionCode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=132;
 
 --
 -- AUTO_INCREMENT for table `po`
@@ -2234,13 +2309,13 @@ ALTER TABLE `project_cat`
 -- AUTO_INCREMENT for table `project_feeder`
 --
 ALTER TABLE `project_feeder`
-  MODIFY `project_feeder_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `project_feeder_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `project_gpon`
 --
 ALTER TABLE `project_gpon`
-  MODIFY `project_gpon_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `project_gpon_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `project_job`
@@ -2252,37 +2327,37 @@ ALTER TABLE `project_job`
 -- AUTO_INCREMENT for table `project_khs`
 --
 ALTER TABLE `project_khs`
-  MODIFY `khs_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `khs_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `project_khs_list`
 --
 ALTER TABLE `project_khs_list`
-  MODIFY `khs_list_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `khs_list_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `project_odc`
 --
 ALTER TABLE `project_odc`
-  MODIFY `project_odc_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `project_odc_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `project_odp`
 --
 ALTER TABLE `project_odp`
-  MODIFY `project_odp_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `project_odp_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `project_penggelaran`
 --
 ALTER TABLE `project_penggelaran`
-  MODIFY `project_penggelaran_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `project_penggelaran_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `project_sitax`
 --
 ALTER TABLE `project_sitax`
-  MODIFY `sitax_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `sitax_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `project_survey`
@@ -2312,7 +2387,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `rpCode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=248;
+  MODIFY `rpCode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=252;
 
 --
 -- AUTO_INCREMENT for table `role_user`
