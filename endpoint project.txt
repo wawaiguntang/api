@@ -79,7 +79,7 @@
                          if(sitax) - 'sitax_total'
                                    - 'sitax_list' | example : ["rt","rw"]
                                   
------------- deprecated ------------
+
 - add feeder project - url : https://api.cosisma.com/project/addFeederBatch/id/{project_id}
               - method : POST
               - body : - 'feeder' | 'example' : [
@@ -102,7 +102,7 @@
                                                     "feeder_core": ""
                                                   }
                                                 ]
------------- deprecated ------------
+
 - update feeder project - url : https://api.cosisma.com/project/updateFeeder/id/{feeder_id}
               - method : PUT
               - body : - feeder_odc
@@ -112,10 +112,10 @@
                        - feeder_lt
                        - feeder_port
                        - feeder_core
------------- deprecated ------------
+
 - delete feeder project - url : https://api.cosisma.com/project/deleteFeeder/id/{feeder_id}
               - method : DELETE
------------- deprecated ------------
+
 - add distribusi project - url : https://api.cosisma.com/project/addDistribusiBatch/id/{feeder_id}
               - method : POST
               - body : - 'distribusi' | 'example' : [
@@ -144,7 +144,7 @@
                                                         "distribusi_note": ""
                                                       }
                                                     ]
------------- deprecated ------------
+
 - update distribusi project - url : https://api.cosisma.com/project/updateDistribusi/id/{distribusi_id}
               - method : PUT
               - body : - distribusi_kukd
@@ -156,7 +156,7 @@
                        - distribusi_core_opsi | nullabel
                        - distribusi_capacity
                        - distribusi_note  | nullabel
------------- deprecated ------------
+
 - delete distribusi project - url : https://api.cosisma.com/project/deleteDistribusi/id/{distribusi_id}
               - method : DELETE
 
@@ -167,17 +167,16 @@
 - delete file survey project - url : https://api.cosisma.com/project/deleteFileSurvey/id/{project_id}/survey/{survey_id}
               - method : DELETE
 
------------- deprecated ------------
 - add khs list - url : https://api.cosisma.com/project/addKHSList/id/{project_id}
               - method : POST
               - body : - 'designator_id'
                        - 'khs_list_qty'
------------- deprecated ------------         
+              
 - edit khs list - url : https://api.cosisma.com/project/updateKHSList/id/{project_id}/khs/{khs_list_id}
               - method : PUT
               - body : - 'designator_id'
                        - 'khs_list_qty'
------------- deprecated ------------
+
 - delete khs project - url : https://api.cosisma.com/project/deleteKHSList/id/{project_id}/khs/{khs_list_id}
               - method : DELETE
 
@@ -272,58 +271,86 @@
 - add data teknis - url : https://v3.api.cosisma.com/project/addDataTeknis/id/{project_id}
               - method : POST
               - body : - 'data_teknis' | 'example' : [
-                                                      {
-                                                          "project_id": 31,
-                                                          "khs_list": [
-                                                              {
-                                                                  "tipe": "GPON",
-                                                                  "designator_id": 1,
-                                                                  "khs_list_qty": 30,
-                                                                  "GPON": {
-                                                                      "gpon": 30,
-                                                                      "slot": 30,
-                                                                      "port": 30,
-                                                                      "output_feeder": 30,
-                                                                      "output_pasif": 30
-                                                                  }
-                                                              },
-                                                              {
-                                                                  "tipe": "Feeder",
-                                                                  "designator_id": 1,
-                                                                  "khs_list_qty": 30
-                                                              },
-                                                              {
-                                                                  "tipe": "ODC",
-                                                                  "designator_id": 1,
-                                                                  "khs_list_qty": 30,
-                                                                  "ODC": {
-                                                                      "address": "Jl.Cempaka Raya",
-                                                                      "lg": "0.234324",
-                                                                      "lt": "0.4647345",
-                                                                      "benchmark_address": "Rumah"
-                                                                  }
-                                                              },
-                                                              {
-                                                                  "tipe": "ODP",
-                                                                  "designator_id": 1,
-                                                                  "khs_list_qty": 30,
-                                                                  "ODP": {
-                                                                      "address": "Jl.Cempaka Raya",
-                                                                      "lg": "0.234324",
-                                                                      "lt": "0.4647345",
-                                                                      "benchmark_address": "Rumah",
-                                                                      "core": "12",
-                                                                      "core_opsi": "24",
-                                                                      "distribusi_core": "24",
-                                                                      "distribusi_core_opsi": "18"
-                                                                  }
-                                                              }
-                                                          ]
-                                                      }
-                                                  ] 
+                                                        {
+                                                            "project_id": 1,
+                                                            "khs_list": [
+                                                                {
+                                                                    "tipe": "GPON",
+                                                                    "designator_id": 1,
+                                                                    "khs_list_qty": 30,
+                                                                    "GPON": {
+                                                                        "gpon": 30,
+                                                                        "slot": 30,
+                                                                        "port": 30,
+                                                                        "output_feeder": 30,
+                                                                        "output_pasif": 30
+                                                                    }
+                                                                },
+							 {
+                                                                    "tipe": "Feeder",
+                                                                    "designator_id": 1,
+                                                                    "khs_list_qty": 30
+                                                                },
+							 {
+                                                                    "tipe": "ODC",
+                                                                    "designator_id": 1,
+                                                                    "khs_list_qty": 30,
+                                                                    "ODC": {
+                                                                        "address": "Jl.Cempaka Raya",
+                                                                        "lg": "0.234324",
+                                                                        "lt": "0.4647345",
+                                                                        "benchmark_address": "Rumah"
+                                                                    }
+                                                                },
+							 {
+                                                                    "tipe": "ODP",
+                                                                    "designator_id": 1,
+                                                                    "khs_list_qty": 30,
+                                                                    "ODP": {
+                                                                        "address": "Jl.Cempaka Raya",
+                                                                        "lg": "0.234324",
+                                                                        "lt": "0.4647345",
+                                                                        "benchmark_address": "Rumah",
+                                                                        "core" => "Core",
+                                                                        "core_opsi" => "Core opsi", // null
+                                                                        "distribusi_core" => "Core distribusi",
+                                                                        "distribusi_core_opsi" => "Core distribusi opsi" //null
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ] 
 
 - delete data teknis - url : https://v3.api.cosisma.com/project/deleteDataTeknis/id/{khs_id}
               - method : DELETE
               
 - delete data teknis list - url : https://v3.api.cosisma.com/project/deleteDataTeknisList/id/{khs_list_id}
               - method : DELETE
+              
+- add one data teknis - url : https://v3.api.cosisma.com/project/addOneDataTeknis
+              - method : POST
+              - body :  - 'khs_id'
+                        - 'designator_id'
+                        - 'khs_list_qty'
+                        - 'tipe' ["GPON","Feeder","ODC","ODP","Penggelaran"]
+                        - jika tipe == GPON maka tambah post seperti dibawah
+                            "gpon": 30,
+                            "slot": 30,
+                            "port": 30,
+                            "output_feeder": 30,
+                            "output_pasif": 30
+                            
+- edit one data teknis - url : https://v3.api.cosisma.com/project/editOneDataTeknis/id/{khs_list_id}
+              - method : PUT
+              - body :  - 'designator_id'
+                        - 'khs_list_qty'
+                        - jika tipe dari khs list == GPON maka tambah post seperti dibawah
+                            "gpon": 30,
+                            "slot": 30,
+                            "port": 30,
+                            "output_feeder": 30,
+                            "output_pasif": 30
+                                    
+              
+                                                                    
+                                                       
