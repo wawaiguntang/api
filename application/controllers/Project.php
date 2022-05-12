@@ -119,8 +119,9 @@ class Project extends RestController
             $khs = $this->db
                 ->get_where('project_khs pk', ['pk.deleteAt' => NULL, 'pk.project_id' => $project_id])
                 ->result_array();
-            $r = $khs;
+            $r = [];
             foreach ($khs as $k => $s) {
+                $r = $s;
                 $khslist = $this->db
                     ->join('designator d', 'd.designator_id=pkl.designator_id')
                     ->join('product p', 'p.product_id=d.product_id')
@@ -158,10 +159,15 @@ class Project extends RestController
                     ];
                 }
                 $r['khs_list'] = $temp;
+                $return['khs'][] = $r;
             }
-            $return['khs'][] = $r;
         }
         if ($getData['project_status'] == 'KHS Check') {
+            $khs_list_id = $this->get('khs_list_id');
+            if ($khs_list_id == NULL) {
+                $res = formatResponse(400, [], [], 'ID list KHS is required', [], '');
+                $this->response($res, 400);
+            }
             $getDataUser = $this->UserModel->uniqueEmail($this->payload['data']['email']);
             if ($getDataUser == NULL) {
                 $res = formatResponse(404, [], [], 'Data user not found', [], '');
@@ -200,9 +206,35 @@ class Project extends RestController
                     if ($v['stock_id'] == NULL) {
                         $getStockChose = [];
                     } else {
-                        $getStockChose = $this->GlobalModel->getData('stock_witel', ['stock_id' => $v['stock_id']], false);
+                        if($khs_list_id == $v['khs_list_id']){
+                            if ($khs_source == "TA") {
+                                $getStockChose = $this->GlobalModel->getData('stock_ho', ['stock_id' => $v['stock_id']], false);
+                            }else{
+                                $getStockChose = $this->GlobalModel->getData('stock_witel', ['stock_id' => $v['stock_id']], false);
+                            }
+                        }else{
+                           if ($v['khs_source'] == "TA") {
+                                $getStockChose = $this->GlobalModel->getData('stock_ho', ['stock_id' => $v['stock_id']], false);
+                            }else{
+                                $getStockChose = $this->GlobalModel->getData('stock_witel', ['stock_id' => $v['stock_id']], false);
+                            } 
+                        }
                     }
-                    $getStock = $this->GlobalModel->getData('stock_witel', ['witel_id' => $getData['witel_id'], 'product_id' => $khsNya['product_id'], 'stock_qty >=' => $v['khs_list_qty']]);
+                    if($khs_list_id == $v['khs_list_id']){
+                        if ($khs_source == "TA") {
+                            $getStock = $this->GlobalModel->getData('stock_ho', ['product_id' => $khsNya['product_id'], 'stock_qty >=' => $v['khs_list_qty']]);
+                        }else{
+                            $getStock = $this->GlobalModel->getData('stock_witel', ['witel_id' => $getData['witel_id'], 'product_id' => $khsNya['product_id'], 'stock_qty >=' => $v['khs_list_qty']]);
+                        }
+                    }else{
+                        if ($v['khs_source'] == "TA") {
+                            $getStock = $this->GlobalModel->getData('stock_ho', ['product_id' => $khsNya['product_id'], 'stock_qty >=' => $v['khs_list_qty']]);
+                        }else{
+                            $getStock = $this->GlobalModel->getData('stock_witel', ['witel_id' => $getData['witel_id'], 'product_id' => $khsNya['product_id'], 'stock_qty >=' => $v['khs_list_qty']]);
+                        }
+                    }
+                    
+                    
                     if ($v['tipe'] == 'Feeder') {
                         $dataTipe = $this->db->get_where('project_feeder', ['deleteAt' => NULL, 'project_feeder_id' => $v['tipe_id']])->row_array();
                     } elseif ($v['tipe'] == 'Penggelaran') {
@@ -217,41 +249,118 @@ class Project extends RestController
                         $res = formatResponse(404, [], [], 'Tipe not found', [], '');
                         $this->response($res, 404);
                     }
-                    $temp[] = [
-                        'khs_list_id' => $v['khs_list_id'],
-                        'khs_list_qty' => $v['khs_list_qty'],
-                        'designator_id' => $v['designator_id'],
-                        'designator_code' => $v['designator_code'],
-                        'designator_desc' => $v['designator_desc'],
-                        'product_name' => $v['product_name'],
-                        'product_portion' => $v['product_portion'],
-                        'brand_name' => $v['brand_name'],
-                        'tipe' => $v['tipe'],
-                        'tipe_id' => $v['tipe_id'],
-                        'data' => $dataTipe,
-                        'khs_list_material_price' => $getDesignator['material_price'],
-                        'khs_list_service_price' => $getDesignator['service_price'],
-                        'khs_list_material_total' => $getDesignator['material_price'] * $v['khs_list_qty'],
-                        'khs_list_service_total' => $getDesignator['service_price'] * $v['khs_list_qty'],
-                        'stock' => $getStock,
-                        'stock_chosen' => $getStockChose
-                    ];
+                    if($khs_list_id == $v['khs_list_id']){
+                        if ($khs_source == "TA") {
+                            $temp[] = [
+                                'khs_list_id' => $v['khs_list_id'],
+                                'khs_list_qty' => $v['khs_list_qty'],
+                                'designator_id' => $v['designator_id'],
+                                'designator_code' => $v['designator_code'],
+                                'designator_desc' => $v['designator_desc'],
+                                'product_name' => $v['product_name'],
+                                'product_portion' => $v['product_portion'],
+                                'brand_name' => $v['brand_name'],
+                                'tipe' => $v['tipe'],
+                                'tipe_id' => $v['tipe_id'],
+                                'data' => $dataTipe,
+                                'khs_list_service_price' => $getDesignator['service_price'],
+                                'khs_list_service_total' => $getDesignator['service_price'] * $v['khs_list_qty'],
+                                'stock' => $getStock,
+                                'stock_chosen' => $getStockChose
+                            ];
+                        }else{
+                            $temp[] = [
+                                'khs_list_id' => $v['khs_list_id'],
+                                'khs_list_qty' => $v['khs_list_qty'],
+                                'designator_id' => $v['designator_id'],
+                                'designator_code' => $v['designator_code'],
+                                'designator_desc' => $v['designator_desc'],
+                                'product_name' => $v['product_name'],
+                                'product_portion' => $v['product_portion'],
+                                'brand_name' => $v['brand_name'],
+                                'tipe' => $v['tipe'],
+                                'tipe_id' => $v['tipe_id'],
+                                'data' => $dataTipe,
+                                'khs_list_material_price' => $getDesignator['material_price'],
+                                'khs_list_service_price' => $getDesignator['service_price'],
+                                'khs_list_material_total' => $getDesignator['material_price'] * $v['khs_list_qty'],
+                                'khs_list_service_total' => $getDesignator['service_price'] * $v['khs_list_qty'],
+                                'stock' => $getStock,
+                                'stock_chosen' => $getStockChose
+                            ];
+                        }
+                    }else{
+                        if ($v['khs_source'] == "TA") {
+                            $temp[] = [
+                                'khs_list_id' => $v['khs_list_id'],
+                                'khs_list_qty' => $v['khs_list_qty'],
+                                'designator_id' => $v['designator_id'],
+                                'designator_code' => $v['designator_code'],
+                                'designator_desc' => $v['designator_desc'],
+                                'product_name' => $v['product_name'],
+                                'product_portion' => $v['product_portion'],
+                                'brand_name' => $v['brand_name'],
+                                'tipe' => $v['tipe'],
+                                'tipe_id' => $v['tipe_id'],
+                                'data' => $dataTipe,
+                                'khs_list_service_price' => $getDesignator['service_price'],
+                                'khs_list_service_total' => $getDesignator['service_price'] * $v['khs_list_qty'],
+                                'stock' => $getStock,
+                                'stock_chosen' => $getStockChose
+                            ];
+                        }else{
+                            $temp[] = [
+                                'khs_list_id' => $v['khs_list_id'],
+                                'khs_list_qty' => $v['khs_list_qty'],
+                                'designator_id' => $v['designator_id'],
+                                'designator_code' => $v['designator_code'],
+                                'designator_desc' => $v['designator_desc'],
+                                'product_name' => $v['product_name'],
+                                'product_portion' => $v['product_portion'],
+                                'brand_name' => $v['brand_name'],
+                                'tipe' => $v['tipe'],
+                                'tipe_id' => $v['tipe_id'],
+                                'data' => $dataTipe,
+                                'khs_list_material_price' => $getDesignator['material_price'],
+                                'khs_list_service_price' => $getDesignator['service_price'],
+                                'khs_list_material_total' => $getDesignator['material_price'] * $v['khs_list_qty'],
+                                'khs_list_service_total' => $getDesignator['service_price'] * $v['khs_list_qty'],
+                                'stock' => $getStock,
+                                'stock_chosen' => $getStockChose
+                            ];
+                        }
+                    }
                 }
                 $t['khs_list'] = $temp;
                 $material_price = 0;
                 $service_price = 0;
                 foreach ($khslist as $k =>  $v) {
+                    $getDesignator = $this->db
+                        ->select('d.designator_id,d.designator_code,d.designator_desc,dp.material_price,dp.service_price,d.createAt,d.updateAt,d.deleteAt')
+                        ->join('designator d', 'd.designator_id=dp.designator_id')
+                        ->where(['dp.deleteAt' => NULL, 'dp.package_id' => $getDataUser['package_id'], 'dp.designator_id' => $v['designator_id']])
+                        ->get('designator_package dp')
+                        ->row_array();
                     if ($v['tipe'] != 'GPON') {
-                        $material_price += $v['khs_list_material_total'];
-                        $service_price += $v['khs_list_service_total'];
+                        if($khs_list_id == $v['khs_list_id']){
+                            if ($khs_source == "TA") {
+                                $service_price += $getDesignator['service_price'] * $v['khs_list_qty'];
+                            } else {
+                                $material_price += $getDesignator['material_price'] * $v['khs_list_qty'];
+                                $service_price += $getDesignator['service_price'] * $v['khs_list_qty'];
+                            }
+                        }else{
+                            if ($v['khs_source'] == "TA") {
+                                $service_price += $getDesignator['service_price'] * $v['khs_list_qty'];
+                            } else {
+                                $material_price += $getDesignator['material_price'] * $v['khs_list_qty'];
+                                $service_price += $getDesignator['service_price'] * $v['khs_list_qty'];
+                            }
+                        }
                     }
                 }
-                if ($khs_source == "TA") {
-                    $t['khs_service_total'] = $service_price;
-                } else {
-                    $t['khs_material_total'] = $material_price;
-                    $t['khs_service_total'] = $service_price;
-                }
+                $t['khs_material_total'] = $material_price;
+                $t['khs_service_total'] = $service_price;
                 $r[] = $t;
             }
             $return['khs'] = $r;
@@ -1177,7 +1286,7 @@ class Project extends RestController
 
     public function addDataTeknis_post()
     {
-        $permission = checkPermission($this->payload['data']['email'], ['CFED']);
+        $permission = checkPermission($this->payload['data']['email'], ['CBDT']);
         if ($permission['status'] == false) {
             $this->response($permission['data'], 400);
         }
@@ -1436,7 +1545,7 @@ class Project extends RestController
 
     public function deleteDataTeknis_delete()
     {
-        $permission = checkPermission($this->payload['data']['email'], ['DDIS']);
+        $permission = checkPermission($this->payload['data']['email'], ['DDTEK']);
         if ($permission['status'] == false) {
             $this->response($permission['data'], 400);
         }
@@ -1473,7 +1582,7 @@ class Project extends RestController
 
     public function deleteDataTeknisList_delete()
     {
-        $permission = checkPermission($this->payload['data']['email'], ['DDIS']);
+        $permission = checkPermission($this->payload['data']['email'], ['DDTEKLIST']);
         if ($permission['status'] == false) {
             $this->response($permission['data'], 400);
         }
@@ -1511,6 +1620,434 @@ class Project extends RestController
         } else {
             $res = formatResponse(400, [], [], 'Failed delete khs list', [], '');
             $this->response($res, 400);
+        }
+    }
+    
+    
+    public function addOneDataTeknis_post()
+    {
+        $permission = checkPermission($this->payload['data']['email'], ['CODT']);
+        if ($permission['status'] == false) {
+            $this->response($permission['data'], 400);
+        }
+
+        $data = array(
+            'khs_id' => $this->post('khs_id'),
+            'designator_id' => $this->post('designator_id'),
+            'khs_list_qty' => $this->post('khs_list_qty'),
+            'tipe' => $this->post('tipe'),
+            
+        );
+
+        $make = $this->validator->make($data, [
+            'khs_id' => 'required',
+            'designator_id' => 'required',
+            'khs_list_qty' => 'required',
+            'tipe' => 'required|in:GPON,Feeder,Penggelaran,ODC,ODP',
+        ]);
+
+        $make->setAliases([
+            'khs_id' => 'KHS',
+            'designator_id' => 'Designator',
+            'khs_list_qty' => 'Quantity',
+            'tipe' => 'Tipe',
+        ]);
+
+        $make->validate();
+
+        if ($make->fails()) {
+            $errors = $make->errors();
+            $err = $errors->firstOfAll();
+            $res = formatResponse(400, [], $err, '', [], '');
+            $this->response($res, 400);
+        } else {
+            $khs_id = $data['khs_id'];
+            if ($khs_id == NULL) {
+                $res = formatResponse(400, [], [], 'ID KHS is required', [], '');
+                $this->response($res, 400);
+            }
+            $getData = $this->db->join('project','project.project_id=project_khs.project_id')->get_where('project_khs', ['project_khs.deleteAt' => NULL, 'project_khs.khs_id' => $khs_id])->row_array();
+            if ($getData == NULL) {
+                $res = formatResponse(404, [], [], 'Data KHS not found', [], '');
+                $this->response($res, 404);
+            } else {
+                if ($getData['project_status'] != 'Survey') {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Can\'t add feeder because status project not a \'Survey\'', [], '');
+                    $this->response($res, 400);
+                }
+            }
+            $this->db->trans_begin();
+            if ($data['tipe'] == 'Feeder') {
+                $insertFeeder = $this->db->insert('project_feeder', [
+                    'createAt' => date('Y-m-d H:i:s')
+                ]);
+                if (!$insertFeeder) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Failed to add data teknis', [], '');
+                    $this->response($res, 400);
+                }
+                $tipe_id = $this->db->insert_id();
+            } elseif ($data['tipe'] == 'Penggelaran') {
+                $insertPenggelaran = $this->db->insert('project_penggelaran', [
+                    'createAt' => date('Y-m-d H:i:s')
+                ]);
+                if (!$insertPenggelaran) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Failed to add data teknis', [], '');
+                    $this->response($res, 400);
+                }
+                $tipe_id = $this->db->insert_id();
+            } elseif ($data['tipe'] == 'ODP') {
+                $ODP = [
+                    'address' => $this->post('address'),
+                    'lg' => $this->post('lg'),
+                    'lt' => $this->post('lt'),
+                    'benchmark_address' => $this->post('benchmark_address'),
+                    'core' => $this->post('core'),
+                    'core_opsi' => $this->post('core_opsi'),
+                    'distribusi_core' => $this->post('distribusi_core'),
+                    'distribusi_core_opsi' => $this->post('distribusi_core_opsi'),
+                    'createAt' => date('Y-m-d H:i:s')
+                ];
+                
+                $make2 = $this->validator->make($ODP, [
+                    'address' => 'required',
+                    'lg' => 'required',
+                    'lt' => 'required',
+                    'benchmark_address' => 'required',
+                    'core' => 'required',
+                    'distribusi_core' => 'required',
+                ]);
+
+                $make2->setAliases([
+                    'address' => 'Alamat',
+                    'lg' => 'Longitude',
+                    'lt' => 'Latitude',
+                    'benchmark_address' => 'Patokan',
+                    'core' => 'Core',
+                    'distribusi_core' => 'Core distribusi',
+                ]);
+
+                $make2->validate();
+
+                if ($make2->fails()) {
+                    $this->db->trans_rollback();
+                    $errors = $make2->errors();
+                    $err = $errors->firstOfAll();
+                    $res = formatResponse(400, [], $err, '', [], '');
+                    $this->response($res, 400);
+                }
+                $insertODP = $this->db->insert('project_odp', $ODP);
+                if (!$insertODP) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Failed to add data teknis', [], '');
+                    $this->response($res, 400);
+                }
+                $tipe_id = $this->db->insert_id();
+      
+            } elseif ($data['tipe'] == 'ODC') {
+                $ODC = [
+                    'address' => $this->post('address'),
+                    'lg' => $this->post('lg'),
+                    'lt' => $this->post('lt'),
+                    'benchmark_address' => $this->post('benchmark_address'),
+                    'createAt' => date('Y-m-d H:i:s')
+                ];
+                $make2 = $this->validator->make($ODC, [
+                    'address' => 'required',
+                    'lg' => 'required',
+                    'lt' => 'required',
+                    'benchmark_address' => 'required',
+                ]);
+
+                $make2->setAliases([
+                    'address' => 'Alamat',
+                    'lg' => 'Longitude',
+                    'lt' => 'Latitude',
+                    'benchmark_address' => 'Patokan',
+                ]);
+
+                $make2->validate();
+
+                if ($make2->fails()) {
+                    $this->db->trans_rollback();
+                    $errors = $make2->errors();
+                    $err = $errors->firstOfAll();
+                    $res = formatResponse(400, [], $err, '', [], '');
+                    $this->response($res, 400);
+                }
+                $insertODC = $this->db->insert('project_odc', $ODC);
+                if (!$insertODC) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Failed to add data teknis', [], '');
+                    $this->response($res, 400);
+                }
+                $tipe_id = $this->db->insert_id();
+            } elseif ($data['tipe'] == 'GPON') {
+                $GPON = [
+                    'gpon' => $this->post('gpon'),
+                    'slot' => $this->post('slot'),
+                    'port' => $this->post('port'),
+                    'output_feeder' => $this->post('output_feeder'),
+                    'output_pasif' => $this->post('output_pasif'),
+                    'createAt' => date('Y-m-d H:i:s')
+                ];
+                $make2 = $this->validator->make($GPON, [
+                    'gpon' => 'required|integer',
+                    'slot' => 'required|integer',
+                    'port' => 'required|integer',
+                    'output_feeder' => 'required|numeric',
+                    'output_pasif' => 'required|numeric',
+                ]);
+
+                $make2->setAliases([
+                    'gpon' => 'GPON',
+                    'slot' => 'Slot',
+                    'port' => 'Port',
+                    'output_feeder' => 'Feeder',
+                    'output_pasif' => 'Pasif',
+                ]);
+
+                $make2->validate();
+
+                if ($make2->fails()) {
+                    $this->db->trans_rollback();
+                    $errors = $make2->errors();
+                    $err = $errors->firstOfAll();
+                    $res = formatResponse(400, [], $err, '', [], '');
+                    $this->response($res, 400);
+                }
+                $insertGPON = $this->db->insert('project_gpon', $GPON);
+                if (!$insertGPON) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Failed to add data teknis', [], '');
+                    $this->response($res, 400);
+                }
+                $tipe_id = $this->db->insert_id();
+            } else {
+                $this->db->trans_rollback();
+                $res = formatResponse(400, [], [], 'Failed to add list data teknis', [], '');
+                $this->response($res, 400);
+            }
+            $data['tipe_id'] = $tipe_id;
+            $insertKHSList = $this->db->insert('project_khs_list', $data);
+            if (!$insertKHSList) {
+                $this->db->trans_rollback();
+                $res = formatResponse(400, [], [], 'Failed to add list data teknis', [], '');
+                $this->response($res, 400);
+            }
+            
+            $this->db->trans_commit();
+            $res = formatResponse(200, [], [], '', [], 'Success to add list data teknis');
+            $this->response($res, 200);
+        }
+    }
+    
+    public function editOneDataTeknis_put()
+    {
+        $permission = checkPermission($this->payload['data']['email'], ['CODT']);
+        if ($permission['status'] == false) {
+            $this->response($permission['data'], 400);
+        }
+        
+        $list_khs_id = $this->get('id');
+        if ($list_khs_id == NULL) {
+            $res = formatResponse(400, [], [], 'ID list KHS is required', [], '');
+            $this->response($res, 400);
+        }
+        $getData = $this->db->join('project_khs','project_khs.khs_id=project_khs_list.khs_id')->join('project','project.project_id=project_khs.project_id')->get_where('project_khs_list', ['project_khs_list.deleteAt' => NULL, 'project_khs_list.khs_list_id' => $list_khs_id])->row_array();
+        if ($getData == NULL) {
+            $res = formatResponse(404, [], [], 'Data list KHS not found', [], '');
+            $this->response($res, 404);
+        } else {
+            if ($getData['project_status'] != 'Survey') {
+                $this->db->trans_rollback();
+                $res = formatResponse(400, [], [], 'Can\'t add feeder because status project not a \'Survey\'', [], '');
+                $this->response($res, 400);
+            }
+        }
+
+        $data = array(
+            'designator_id' => $this->put('designator_id'),
+            'khs_list_qty' => $this->put('khs_list_qty')
+        );
+
+        $make = $this->validator->make($data, [
+            'designator_id' => 'required',
+            'khs_list_qty' => 'required'
+        ]);
+
+        $make->setAliases([
+            'designator_id' => 'Designator',
+            'khs_list_qty' => 'Quantity'
+        ]);
+
+        $make->validate();
+
+        if ($make->fails()) {
+            $errors = $make->errors();
+            $err = $errors->firstOfAll();
+            $res = formatResponse(400, [], $err, '', [], '');
+            $this->response($res, 400);
+        } else {
+            $this->db->trans_begin();
+            if ($getData['tipe'] == 'Feeder') {
+                $updateFeeder = $this->db->where('project_feeder_id',$getData['tipe_id'])->update('project_feeder', [
+                    'updateAt' => date('Y-m-d H:i:s')
+                ]);
+                if (!$updateFeeder) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Failed to update data teknis', [], '');
+                    $this->response($res, 400);
+                }
+            } elseif ($getData['tipe'] == 'Penggelaran') {
+                $updatePenggelaran = $this->db->where('project_penggelaran_id',$getData['tipe_id'])->update('project_penggelaran', [
+                    'updateAt' => date('Y-m-d H:i:s')
+                ]);
+                if (!$updatePenggelaran) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Failed to update data teknis', [], '');
+                    $this->response($res, 400);
+                }
+            } elseif ($getData['tipe'] == 'ODP') {
+                $ODP = [
+                    'address' => $this->put('address'),
+                    'lg' => $this->put('lg'),
+                    'lt' => $this->put('lt'),
+                    'benchmark_address' => $this->put('benchmark_address'),
+                    'core' => $this->put('core'),
+                    'core_opsi' => $this->put('core_opsi'),
+                    'distribusi_core' => $this->put('distribusi_core'),
+                    'distribusi_core_opsi' => $this->put('distribusi_core_opsi'),
+                    'createAt' => date('Y-m-d H:i:s')
+                ];
+                
+                $make2 = $this->validator->make($ODP, [
+                    'address' => 'required',
+                    'lg' => 'required',
+                    'lt' => 'required',
+                    'benchmark_address' => 'required',
+                    'core' => 'required',
+                    'distribusi_core' => 'required',
+                ]);
+
+                $make2->setAliases([
+                    'address' => 'Alamat',
+                    'lg' => 'Longitude',
+                    'lt' => 'Latitude',
+                    'benchmark_address' => 'Patokan',
+                    'core' => 'Core',
+                    'distribusi_core' => 'Core distribusi',
+                ]);
+
+                $make2->validate();
+
+                if ($make2->fails()) {
+                    $this->db->trans_rollback();
+                    $errors = $make2->errors();
+                    $err = $errors->firstOfAll();
+                    $res = formatResponse(400, [], $err, '', [], '');
+                    $this->response($res, 400);
+                }
+                $updateODP = $this->db->where('project_odp_id',$getData['tipe_id'])->update('project_odp', $ODP);
+                if (!$updateODP) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Failed to update data teknis', [], '');
+                    $this->response($res, 400);
+                }
+            } elseif ($getData['tipe'] == 'ODC') {
+                $ODC = [
+                    'address' => $this->put('address'),
+                    'lg' => $this->put('lg'),
+                    'lt' => $this->put('lt'),
+                    'benchmark_address' => $this->put('benchmark_address'),
+                    'createAt' => date('Y-m-d H:i:s')
+                ];
+                $make2 = $this->validator->make($ODC, [
+                    'address' => 'required',
+                    'lg' => 'required',
+                    'lt' => 'required',
+                    'benchmark_address' => 'required',
+                ]);
+
+                $make2->setAliases([
+                    'address' => 'Alamat',
+                    'lg' => 'Longitude',
+                    'lt' => 'Latitude',
+                    'benchmark_address' => 'Patokan',
+                ]);
+
+                $make2->validate();
+
+                if ($make2->fails()) {
+                    $this->db->trans_rollback();
+                    $errors = $make2->errors();
+                    $err = $errors->firstOfAll();
+                    $res = formatResponse(400, [], $err, '', [], '');
+                    $this->response($res, 400);
+                }
+                $updateODC = $this->db->where('project_odc_id',$getData['tipe_id'])->update('project_odc', $ODC);
+                if (!$updateODC) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Failed to update data teknis', [], '');
+                    $this->response($res, 400);
+                }
+            } elseif ($getData['tipe'] == 'GPON') {
+                $GPON = [
+                    'gpon' => $this->put('gpon'),
+                    'slot' => $this->put('slot'),
+                    'port' => $this->put('port'),
+                    'output_feeder' => $this->put('output_feeder'),
+                    'output_pasif' => $this->put('output_pasif'),
+                    'createAt' => date('Y-m-d H:i:s')
+                ];
+                $make2 = $this->validator->make($GPON, [
+                    'gpon' => 'required|integer',
+                    'slot' => 'required|integer',
+                    'port' => 'required|integer',
+                    'output_feeder' => 'required|numeric',
+                    'output_pasif' => 'required|numeric',
+                ]);
+
+                $make2->setAliases([
+                    'gpon' => 'GPON',
+                    'slot' => 'Slot',
+                    'port' => 'Port',
+                    'output_feeder' => 'Feeder',
+                    'output_pasif' => 'Pasif',
+                ]);
+
+                $make2->validate();
+
+                if ($make2->fails()) {
+                    $this->db->trans_rollback();
+                    $errors = $make2->errors();
+                    $err = $errors->firstOfAll();
+                    $res = formatResponse(400, [], $err, '', [], '');
+                    $this->response($res, 400);
+                }
+                $updateGPON = $this->db->insert('project_gpon', $GPON);
+                if (!$updateGPON) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'Failed to update data teknis', [], '');
+                    $this->response($res, 400);
+                }
+            } else {
+                $this->db->trans_rollback();
+                $res = formatResponse(400, [], [], 'Failed to update list data teknis', [], '');
+                $this->response($res, 400);
+            }
+            $insertKHSList = $this->db->where('khs_list_id',$list_khs_id)->update('project_khs_list', $data);
+            if (!$insertKHSList) {
+                $this->db->trans_rollback();
+                $res = formatResponse(400, [], [], 'Failed to update list data teknis', [], '');
+                $this->response($res, 400);
+            }
+            
+            $this->db->trans_commit();
+            $res = formatResponse(200, [], [], '', [], 'Success to update list data teknis');
+            $this->response($res, 200);
         }
     }
 
@@ -2309,7 +2846,8 @@ class Project extends RestController
             ];
         } else {
             $vall = [
-                'khs_source' => 'required|in:TA,WITEL'
+                'khs_source' => 'required|in:TA,WITEL',
+                'stock_id' => 'required'
             ];
         }
 
@@ -2404,6 +2942,10 @@ class Project extends RestController
                 $check2 = $this->GlobalModel->getData('project_khs', ['deleteAt' => NULL, 'project_id' => $project_id]);
                 $check3 = $this->GlobalModel->getData('project_sitax', ['deleteAt' => NULL, 'project_id' => $project_id]);
                 if ($check == NULL || $check2 == NULL || $check3 == NULL) {
+                    $this->db->trans_rollback();
+                    $res = formatResponse(400, [], [], 'File survey, sitax, khs list, feeder, distribusi must be filled', [], '');
+                    $this->response($res, 400);
+                } else {
                     foreach ($check2 as $k => $v) {
                         $check5 = $this->GlobalModel->getData('project_khs_list', ['deleteAt' => NULL, 'khs_id' => $v['khs_id']]);
                         if ($check5 == NULL) {
@@ -2412,7 +2954,6 @@ class Project extends RestController
                             $this->response($res, 400);
                         }
                     }
-                } else {
                     $updateStatus = $this->GlobalModel->update('project', ['project_status' => 'KHS Check'], ['deleteAt' => NULL, 'project_id' => $project_id]);
                     if ($this->db->trans_status() === FALSE) {
                         $this->db->trans_rollback();
@@ -2483,14 +3024,14 @@ class Project extends RestController
                                     $this->response($res, 400);
                                 }
                                 $product_id = $designator['product_id'];
+                                $stock_id = $v['stock_id'];
+                                if ($stock_id == NULL) {
+                                    $this->db->trans_rollback();
+                                    $res = formatResponse(400, [], [], 'Failed Approved Instalation, please select stock product before', [], '');
+                                    $this->response($res, 400);
+                                }
                                 if ($v['khs_source'] == 'WITEL') {
                                     $witel_id = $getData['witel_id'];
-                                    $stock_id = $v['stock_id'];
-                                    if ($stock_id == NULL) {
-                                        $this->db->trans_rollback();
-                                        $res = formatResponse(400, [], [], 'Failed Approved Instalation, please select stock product before', [], '');
-                                        $this->response($res, 400);
-                                    }
                                     $getStockWitel = $this->GlobalModel->getData('stock_witel', ['stock_id' => $stock_id, 'witel_id' => $witel_id, 'product_id' => $product_id, 'deleteAt' => NULL], false);
                                     if ($this->db->trans_status() === FALSE) {
                                         $this->db->trans_rollback();
@@ -2539,7 +3080,6 @@ class Project extends RestController
                         }
                         $material_price = 0;
                         $service_price = 0;
-                        $getDataKHSList = $this->GlobalModel->getData('project_khs', ['deleteAt' => NULL, 'khs_id' => $c['khs_id']]);
                         foreach ($getDataKHSList as $k =>  $v) {
                             if ($v['tipe'] != 'GPON') {
                                 $material_price += $v['khs_list_material_total'];
